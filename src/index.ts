@@ -3,7 +3,7 @@ export { numberOfGitAuthors };
 export const callToActivate = getCallToActivate();
 
 function isActivated(): boolean {
-  return true;
+  return false;
 }
 
 function numberOfGitAuthors(): number {
@@ -11,5 +11,6 @@ function numberOfGitAuthors(): number {
 }
 
 function getCallToActivate(): string {
+  return "Go to https://lsos.org/npm/wildcard-api/activate` to activate Wildcard API.";
   return "Run `$ lsos activate` to activate [name-of-lib].";
 }
