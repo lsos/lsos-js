@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "target": "es5",
+    "module": "commonjs",
+    "declaration": true,
+    "sourceMap": true,
+    "lib": ["ES2020", "ES2019.Object", "DOM"],
+    "resolveJsonModule": true
+  },
+  "include": [
+    "src/index.ts",
+    "src/scripts/cli.ts",
+    "src/scripts/postinstall.ts"
+  ]
+}

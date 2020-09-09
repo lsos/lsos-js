@@ -1,0 +1,34 @@
+{
+  "name": "@lsos/basic",
+  "version": "0.0.1",
+  "//": "No dependencies.",
+  "dependencies": {},
+  "main": "dist/index.js",
+  "bin": {
+    "lsos": "dist/scripts/cli.js"
+  },
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "dev": "yarn build:prepare && yarn build:dev",
+    "prod": "yarn build:prepare && yarn build:prod",
+    "build:dev": "tsc --watch",
+    "build:prod": "tsc",
+    "build:prepare": "yarn build:clean && yarn build:permissions",
+    "build:clean": "rm -rf dist/",
+    "build:permissions": "(mkdir -p dist/scripts/ && cd dist/scripts/ && touch cli.js postinstall.js && chmod 775 cli.js postinstall.js)",
+    "postinstall": "node -e \"try{require('./dist/scripts/postinstall')}catch(err){console.log('====== Warning ======');console.log(err);}\"",
+    "prepublishOnly": "yarn prod"
+  },
+  "devDependencies": {
+    "@types/node": "^14.0.23",
+    "typescript": "^3.9.6"
+  },
+  "files": [
+    "/dist/",
+    "/src/"
+  ],
+  "repository": "github:lsos/basic",
+  "publishConfig": {
+    "access": "public"
+  }
+}
