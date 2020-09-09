@@ -2,7 +2,7 @@
 import { UserConfig } from "../UserConfig";
 import { splitByLine } from "../utils/split";
 */
-import { symbolInfo, symbolSuccess, stylePath } from "./utils/cli-components";
+import { symbolInfo, symbolSuccess, stylePath } from "@lsos/utils";
 import { EOL } from "os";
 
 export { activate };
