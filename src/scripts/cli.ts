@@ -7,21 +7,21 @@ import { EOL } from "os";
 
 cli();
 
-function cli() {
+async function cli() {
   console.log(header);
   console.log();
 
-  const cmd = getCommand();
+  const { cmd, args } = getCommand();
 
   switch (cmd) {
     case "activate":
-      activate();
+      await activate(args[1]);
       break;
     default:
       console.log(styleError("Unknown command ") + styleErrorEmphasis(cmd));
       console.log();
     case "help":
-    case "":
+    case null:
       showHelp();
   }
 }
@@ -43,12 +43,16 @@ function cmdColor(str: string): string {
   return fgBold(str);
 }
 
-function getCommand(): string {
+function getCommand() {
   const { argv } = process;
-  if (argv.length !== 3) {
-    return "";
+  if (argv.length < 3) {
+    return { cmd: null, args: null };
   }
+
   const cmd = argv[2];
   assert(cmd.constructor === String);
-  return cmd;
+
+  const args = argv.slice(3);
+
+  return { cmd, args };
 }
