@@ -26,13 +26,10 @@ type ProjectLsosConfig = {
 };
 
 async function activate(key: string): Promise<void> {
-  const { company, tool, activationPeriod, signature } = decodeKey(key);
-
-  const activationKey = { company, tool, activationPeriod, signature };
+  const activationKey = decodeKey(key);
+  checkActivationKey(activationKey);
 
   checkSignature(activationKey);
-
-  console.log(company, tool, signature, activationPeriod);
 
   await addActivationKey(activationKey);
 
@@ -108,25 +105,15 @@ function decodeKey(key: string): ActivationKey {
     company: "MegaCorp",
     tool: "SuperLib",
     activationPeriod: {
-      begin: "2020-09-06",
-      end: "2020-09-13",
+      begin: "2020-09-13",
+      end: "2020-10-13",
     },
     signature: "euhwqieuh",
   };
 }
 
-async function getGitRootDir() {
-  const gitRootDir = await execCmd("git rev-parse --show-toplevel");
-  return gitRootDir;
-}
-
 async function addActivationKey(activationKey: ActivationKey) {
-  const gitRootDir = await getGitRootDir();
-
-  const configFileName = "./.lsos.json";
-  const configPath = pathJoin(gitRootDir, configFileName);
-
-  const projectLsosConfig: ProjectLsosConfig = readJsonFile(configPath);
+  const projectLsosConfig: ProjectLsosConfig = await readProjectLsosConfigFile();
 
   let activationKeys = projectLsosConfig.activationKeys || [];
   activationKeys = cleanExpiredActivationKeys(activationKeys);
@@ -141,27 +128,69 @@ async function addActivationKey(activationKey: ActivationKey) {
 
   projectLsosConfig.activationKeys = activationKeys;
 
-  assert(
-    projectLsosConfig.constructor === Array,
-    "The JSON file at " + configPath + " should be an array."
-  );
-
-  writeJsonFile(configPath, projectLsosConfig);
+  await writeProjectLsosConfigFile(projectLsosConfig);
 }
 
 function cleanExpiredActivationKeys(
   activationKeys: ActivationKey[]
 ): ActivationKey[] {
-  return activationKeys.filter((activationKey) => {
-    if (new Date(activationKey.activationPeriod.end) < new Date()) {
-      return false;
-    }
+  return activationKeys.filter((k) => !isExpired(k));
+}
+function isExpired(activationKey: ActivationKey) {
+  if (new Date(activationKey.activationPeriod.end) < new Date()) {
     return true;
-  });
+  }
+  return false;
+}
+function checkActivationKey(activationKey: ActivationKey) {
+  if (isExpired(activationKey)) {
+    console.log(activationKey);
+    assert(false, "The activationKey you provided is expired.");
+  }
+  assert(activationKey.tool);
+  assert(activationKey.company);
+  assert(activationKey.signature);
+  assert(activationKey.activationPeriod.begin);
+  assert(activationKey.activationPeriod.end);
+}
+
+async function readProjectLsosConfigFile(): Promise<ProjectLsosConfig> {
+  const projectLsosConfig: ProjectLsosConfig =
+    readJsonFile(await getConfigPath()) || {};
+  assert(
+    projectLsosConfig.constructor === Object,
+    "The file at " +
+      configPath +
+      " should not exist or should be a JSON object."
+  );
+  return projectLsosConfig;
+}
+async function writeProjectLsosConfigFile(
+  projectLsosConfig: ProjectLsosConfig
+) {
+  assert(projectLsosConfig.constructor === Object);
+  writeJsonFile(await getConfigPath(), projectLsosConfig);
+}
+
+var configPath: string;
+async function getConfigPath(): Promise<string> {
+  if (!configPath) {
+    const configFileName = "./.lsos.json";
+    const gitRootDir = await getGitRootDir();
+    configPath = pathJoin(gitRootDir, configFileName);
+  }
+  return configPath;
+}
+async function getGitRootDir() {
+  const result = await execCmd("git rev-parse --show-toplevel");
+  const gitRootDir = result.split("\n")[0];
+  return gitRootDir;
 }
 
 function writeJsonFile(path: string, obj: any): void {
+  assert(obj);
   const content = JSON.stringify(obj, null, 2);
+  console.log(content);
   writeFileSync(path, content + EOL, "utf8");
 }
 
@@ -171,7 +200,6 @@ function readJsonFile(path: string): any {
     const obj = JSON.parse(content);
     return obj;
   } catch (err) {
-    // return {};
-    return [];
+    return null;
   }
 }
