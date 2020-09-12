@@ -15,7 +15,7 @@ async function cli() {
 
   switch (cmd) {
     case "activate":
-      await activate(args[1]);
+      await _activate(args);
       break;
     default:
       console.log(styleError("Unknown command ") + styleErrorEmphasis(cmd));
@@ -24,6 +24,23 @@ async function cli() {
     case null:
       showHelp();
   }
+}
+
+async function _activate(args) {
+  const activationKeyHash = args[0];
+  if (args.length !== 1 || !activationKeyHash) {
+    console.log(
+      styleError("Wrong ") +
+        styleErrorEmphasis("activate") +
+        styleError(" usage.")
+    );
+    console.log();
+    console.log("Usage: lsos activate <activation-key>");
+    console.log();
+    return;
+  }
+  await activate(args[0]);
+  console.log();
 }
 
 function showHelp() {
