@@ -25,10 +25,8 @@ type ProjectLsosConfig = {
   activationKeys: ActivationKey[];
 };
 
-async function activate(key: string): Promise<void> {
-  const activationKey = decodeKey(key);
-  checkActivationKey(activationKey);
-
+async function activate(keyHash: string): Promise<void> {
+  const activationKey = decodeKeyHash(keyHash);
   checkSignature(activationKey);
 
   await addActivationKey(activationKey);
@@ -80,7 +78,7 @@ function prettyUserConfig() {
 */
 
 function checkSignature(activationKey: ActivationKey): void {
-  const signatureContent = dehash(activationKey.signature);
+  const signatureContent = decryptSignature(activationKey.signature);
   const checkFailed = signatureContent === serialize_key(activationKey);
   if (checkFailed) {
     console.log(activationKey);
@@ -95,21 +93,34 @@ function serialize_key(activationKey: ActivationKey) {
     activationKey.activationPeriod.end,
   ].join("|");
 }
+function deserialize_key(keyString: string): ActivationKey {
+  // TODO serialze | in values or forbid |
+  const keyValues = keyString.split("|");
 
-function dehash(str: string): string {
-  return str;
-}
-
-function decodeKey(key: string): ActivationKey {
-  return {
-    company: "MegaCorp",
-    tool: "SuperLib",
+  const activationKey = {
+    tool: keyValues[0],
+    company: keyValues[1],
     activationPeriod: {
-      begin: "2020-09-13",
-      end: "2020-10-13",
+      begin: keyValues[2],
+      end: keyValues[3],
     },
-    signature: "euhwqieuh",
+    signature: keyValues[4],
   };
+
+  checkActivationKey(activationKey);
+
+  return activationKey;
+}
+function checkActivationKey(activationKey: ActivationKey) {
+  if (isExpired(activationKey)) {
+    console.log(activationKey);
+    assert(false, "The activationKey you provided is expired.");
+  }
+  assert(activationKey.tool);
+  assert(activationKey.company);
+  assert(activationKey.signature);
+  assert(activationKey.activationPeriod.begin);
+  assert(activationKey.activationPeriod.end);
 }
 
 async function addActivationKey(activationKey: ActivationKey) {
@@ -141,17 +152,6 @@ function isExpired(activationKey: ActivationKey) {
     return true;
   }
   return false;
-}
-function checkActivationKey(activationKey: ActivationKey) {
-  if (isExpired(activationKey)) {
-    console.log(activationKey);
-    assert(false, "The activationKey you provided is expired.");
-  }
-  assert(activationKey.tool);
-  assert(activationKey.company);
-  assert(activationKey.signature);
-  assert(activationKey.activationPeriod.begin);
-  assert(activationKey.activationPeriod.end);
 }
 
 async function readProjectLsosConfigFile(): Promise<ProjectLsosConfig> {
@@ -202,4 +202,66 @@ function readJsonFile(path: string): any {
   } catch (err) {
     return null;
   }
+}
+
+function decodeKeyHash(keyHash: string): ActivationKey {
+  const keyString = base64_decode(keyHash);
+
+  const activationKey = deserialize_key(keyString);
+
+  return activationKey;
+}
+
+function base64_decode(str: string): string {
+  return atob(str);
+}
+function base64_encode(str: string): string {
+  return btoa(str);
+}
+
+var crypto = require("crypto");
+var path = require("path");
+var fs = require("fs");
+const passphrase = "mySecret";
+
+var encryptStringWithRsaPublicKey = function (
+  toEncrypt,
+  relativeOrAbsolutePathToPublicKey
+) {
+  var absolutePath = path.resolve(relativeOrAbsolutePathToPublicKey);
+  var publicKey = fs.readFileSync(absolutePath, "utf8");
+  var buffer = new Buffer(toEncrypt);
+  var encrypted = crypto.publicEncrypt(publicKey, buffer);
+  return encrypted.toString("base64");
+};
+
+var decryptStringWithRsaPrivateKey = function (
+  toDecrypt,
+  relativeOrAbsolutePathtoPrivateKey
+) {
+  var absolutePath = path.resolve(relativeOrAbsolutePathtoPrivateKey);
+  var privateKey = fs.readFileSync(absolutePath, "utf8");
+  var buffer = new Buffer(toDecrypt, "base64");
+  //var decrypted = crypto.privateDecrypt(privateKey, buffer);
+  const decrypted = crypto.privateDecrypt(
+    {
+      key: privateKey.toString(),
+      passphrase: passphrase,
+    },
+    buffer
+  );
+  return decrypted.toString("utf8");
+};
+
+let a = encryptStringWithRsaPublicKey("hello", "public.pem");
+let b = decryptStringWithRsaPrivateKey(a, "private.pem");
+console.log(b);
+
+function decryptSignature(str: string): string {
+  var buffer = new Buffer(toDecrypt, "base64");
+  return str;
+}
+function encryptSignature() {
+  var buffer = new Buffer(toDecrypt, "base64");
+  return str;
 }
