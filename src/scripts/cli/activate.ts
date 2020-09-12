@@ -1,20 +1,19 @@
 /*
 import { UserConfig } from "../UserConfig";
 import { splitByLine } from "../utils/split";
-*/
 import { symbolInfo, symbolSuccess, stylePath } from "@lsos/utils";
+*/
 import { writeFileSync, readFileSync } from "fs";
 import { join as pathJoin } from "path";
 import assert = require("assert");
 import { EOL } from "os";
-import { resolve as pathResolve } from "path";
 import { execCmd } from "@lsos/utils";
 import {
-  decodeKeyHash,
+  decodeActivationKey,
   signatureIsValid,
   isExpired,
   ActivationKey,
-} from "@lsos/utils/activationKey";
+} from "@lsos/utils/dist/activationKey";
 
 export { activate };
 
@@ -23,10 +22,9 @@ type ProjectLsosConfig = {
 };
 
 async function activate(keyHash: string): Promise<void> {
-  const activationKey: ActivationKey = decodeKeyHash(keyHash);
+  const activationKey: ActivationKey = decodeActivationKey(keyHash);
 
-  const publicKeyFile = pathResolve("./public.pem");
-  if (!signatureIsValid(activationKey, publicKeyFile)) {
+  if (!signatureIsValid(activationKey)) {
     console.log(activationKey);
     assert(false, "Invalid key: the signature seems to have been corrupted.");
   }
