@@ -7,7 +7,6 @@ import { execCmd } from "@lsos/utils";
 import {
   decodeActivationKey,
   signatureVerify,
-  isExpired,
   ActivationKey,
 } from "@lsos/utils/dist/activationKey";
 
@@ -22,10 +21,6 @@ async function activate(keyEncoded: string): Promise<void> {
 
   if (!signatureVerify(activationKey)) {
     assert(false, "Invalid key: the signature seems to have been corrupted.");
-  }
-
-  if (isExpired(activationKey)) {
-    assert(false, "The activationKey you provided is expired.");
   }
 
   const alreadyAdded = await addActivationKey(activationKey);
@@ -45,8 +40,7 @@ async function addActivationKey(
 ): Promise<boolean> {
   const projectLsosConfig: ProjectLsosConfig = await readProjectLsosConfigFile();
 
-  let activationKeys = projectLsosConfig.activationKeys || [];
-  activationKeys = cleanExpiredActivationKeys(activationKeys);
+  const activationKeys = projectLsosConfig.activationKeys || [];
 
   if (alreadyAdded(activationKeys, activationKey)) {
     return true;
@@ -70,12 +64,6 @@ function alreadyAdded(
       (key) => key.signature === activationKey.signature
     ) !== -1
   );
-}
-
-function cleanExpiredActivationKeys(
-  activationKeys: ActivationKey[]
-): ActivationKey[] {
-  return activationKeys.filter((k) => !isExpired(k));
 }
 
 async function readProjectLsosConfigFile(): Promise<ProjectLsosConfig> {
