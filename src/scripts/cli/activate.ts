@@ -10,7 +10,7 @@ import { EOL } from "os";
 import { execCmd } from "@lsos/utils";
 import {
   decodeActivationKey,
-  signatureIsValid,
+  signatureVerify,
   isExpired,
   ActivationKey,
 } from "@lsos/utils/dist/activationKey";
@@ -24,7 +24,7 @@ type ProjectLsosConfig = {
 async function activate(keyEncoded: string): Promise<void> {
   const activationKey: ActivationKey = decodeActivationKey(keyEncoded);
 
-  if (!signatureIsValid(activationKey)) {
+  if (!signatureVerify(activationKey)) {
     assert(false, "Invalid key: the signature seems to have been corrupted.");
   }
 
