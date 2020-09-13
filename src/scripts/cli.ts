@@ -11,14 +11,20 @@ async function cli() {
   console.log(header);
   console.log();
 
-  const { cmd, args } = getCommand();
+  const cmd = getCommand();
 
-  switch (cmd) {
+  if (cmd === null) {
+    showHelp();
+    return;
+  }
+  const { command, args } = cmd;
+
+  switch (command) {
     case "activate":
       await _activate(args);
       break;
     default:
-      console.log(styleError("Unknown command ") + styleErrorEmphasis(cmd));
+      console.log(styleError("Unknown command ") + styleErrorEmphasis(command));
       console.log();
     case "help":
     case null:
@@ -26,7 +32,7 @@ async function cli() {
   }
 }
 
-async function _activate(args) {
+async function _activate(args: string[]) {
   const activationKeyHash = args[0];
   if (args.length !== 1 || !activationKeyHash) {
     console.log(
@@ -63,13 +69,13 @@ function cmdColor(str: string): string {
 function getCommand() {
   const { argv } = process;
   if (argv.length < 3) {
-    return { cmd: null, args: null };
+    return null;
   }
 
-  const cmd = argv[2];
-  assert(cmd.constructor === String);
+  const command = argv[2];
+  assert(command.constructor === String);
 
   const args = argv.slice(3);
 
-  return { cmd, args };
+  return { command, args };
 }
