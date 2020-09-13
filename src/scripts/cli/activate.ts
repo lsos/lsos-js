@@ -21,8 +21,8 @@ type ProjectLsosConfig = {
   activationKeys: ActivationKey[];
 };
 
-async function activate(keyHash: string): Promise<void> {
-  const activationKey: ActivationKey = decodeActivationKey(keyHash);
+async function activate(keyEncoded: string): Promise<void> {
+  const activationKey: ActivationKey = decodeActivationKey(keyEncoded);
 
   if (!signatureIsValid(activationKey)) {
     assert(false, "Invalid key: the signature seems to have been corrupted.");
