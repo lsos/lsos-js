@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { activate } from "./cli/activate";
+import { status } from "./cli/status";
 import { header, fgBold, styleError, styleErrorEmphasis } from "@lsos/utils";
 import assert = require("assert");
 import { EOL } from "os";
@@ -23,11 +24,13 @@ async function cli() {
     case "activate":
       await _activate(args);
       break;
+    case "status":
+      await _status(args);
+      break;
     default:
       console.log(styleError("Unknown command ") + styleErrorEmphasis(command));
       console.log();
     case "help":
-    case null:
       showHelp();
   }
 }
@@ -49,14 +52,31 @@ async function _activate(args: string[]) {
   console.log();
 }
 
+async function _status(args: string[]) {
+  if (args.length !== 0) {
+    console.log(
+      styleError("Wrong ") +
+        styleErrorEmphasis("status") +
+        styleError(" usage.")
+    );
+    console.log();
+    console.log("Usage: lsos status");
+    console.log();
+    return;
+  }
+  await status();
+  console.log();
+}
+
 function showHelp() {
   console.log(
     [
       "Usage: lsos " + /*cmdColor*/ "<command>",
       "",
       "Commands:",
-      `  ${cmdColor("activate")}     Activate Lsos Basic projects`,
-      `  ${cmdColor("help")}         Display this help information`,
+      `  ${cmdColor("activate")}  Add activation key`,
+      `  ${cmdColor("status")}    Show expiration status of added keys`,
+      `  ${cmdColor("help")}      Display this help information`,
       "",
     ].join(EOL)
   );

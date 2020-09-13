@@ -11,6 +11,7 @@ import {
 } from "@lsos/utils/dist/activationKey";
 
 export { activate };
+export { getActivationKeys };
 
 type ProjectLsosConfig = {
   activationKeys: ActivationKey[];
@@ -64,6 +65,12 @@ function alreadyAdded(
       (key) => key.signature === activationKey.signature
     ) !== -1
   );
+}
+
+async function getActivationKeys(): Promise<ActivationKey[]> {
+  const projectLsosConfig: ProjectLsosConfig = await readProjectLsosConfigFile();
+  const activationKeys = projectLsosConfig.activationKeys || [];
+  return activationKeys;
 }
 
 async function readProjectLsosConfigFile(): Promise<ProjectLsosConfig> {
