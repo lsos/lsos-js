@@ -3,9 +3,9 @@ import { getPurchasedDaysLeft, PurchasedDaysLeft } from "../cli/status";
 
 type ExpirationDates = { [key: string]: Date };
 
-export { findExpirationDates };
+export { saveExpirationDates };
 
-async function findExpirationDates() {
+async function saveExpirationDates() {
   const expirationDates = await getExpirationDates();
 
   replaceFileContent(
