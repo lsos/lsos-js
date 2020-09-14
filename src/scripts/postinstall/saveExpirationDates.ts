@@ -1,7 +1,7 @@
 import { replaceFileContent } from "@lsos/utils/dist/replaceFileContent";
 import { getPurchasedDaysLeft, PurchasedDaysLeft } from "../cli/status";
 
-type ExpirationDates = { [key: string]: Date };
+type ExpirationDates = { [key: string]: number };
 
 export { saveExpirationDates };
 
@@ -17,7 +17,7 @@ async function getExpirationDates(): Promise<ExpirationDates> {
   const expirationDates: ExpirationDates = {};
 
   Object.entries(purchasedDaysLeft).forEach(([npmName, daysLeft]) => {
-    expirationDates[npmName] = getExpirationDate(daysLeft);
+    expirationDates[npmName] = getExpirationDate(daysLeft).getTime();
   });
 
   return expirationDates;
