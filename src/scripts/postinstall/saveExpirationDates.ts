@@ -5,14 +5,10 @@ type ExpirationDates = { [key: string]: Date };
 
 export { saveExpirationDates };
 
-async function saveExpirationDates() {
+async function saveExpirationDates(envFile: string) {
   const expirationDates = await getExpirationDates();
 
-  replaceFileContent(
-    require.resolve("../../env/expirationDates.js"),
-    "expirationDates",
-    expirationDates
-  );
+  replaceFileContent(envFile, "expirationDates", expirationDates);
 }
 
 async function getExpirationDates(): Promise<ExpirationDates> {

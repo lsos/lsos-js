@@ -2,7 +2,9 @@
   "name": "@lsos/basic",
   "version": "0.0.1",
   "//": "No dependencies.",
-  "dependencies": {},
+  "dependencies": {
+    "find-up": "^5.0.0"
+  },
   "main": "dist/index.js",
   "bin": {
     "lsos": "dist/scripts/cli.js"
