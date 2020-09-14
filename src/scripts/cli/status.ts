@@ -3,9 +3,11 @@ import { symbolInfo, fgBold, symbolSuccess, symbolError } from "@lsos/utils";
 import { ActivationKey } from "@lsos/utils/dist/activationKey";
 import { getActivationKeys } from "./activate";
 
-type PurchasedDaysLeft = { [key: string]: number };
+export { getPurchasedDaysLeft };
 
 export { status };
+
+export type PurchasedDaysLeft = { [key: string]: number };
 
 async function status() {
   const purchasedDaysLeft = await getPurchasedDaysLeft();
