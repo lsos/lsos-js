@@ -15,9 +15,11 @@ type ProjectInfo = {
   npmName: string;
 };
 
-function verifyActivation({ projectName, npmName }: ProjectInfo) {
-  const MIN_AUTHOR_NUMBER = 1;
-
+function verifyActivation({
+  projectName,
+  npmName,
+  minNumberOfAuthor = 3,
+}: ProjectInfo & { minNumberOfAuthor: number }) {
   assertUsage(npmName, "Argument `npmName` is missing.");
   assertUsage(projectName, "Argument `npmName` is missing.");
 
@@ -32,13 +34,14 @@ function verifyActivation({ projectName, npmName }: ProjectInfo) {
       _isActivated,
       npmName,
       projectName,
+      minNumberOfAuthor,
     });
   }
   //*/
 
   if (
     isDev() &&
-    numberOfAuthors() >= MIN_AUTHOR_NUMBER &&
+    numberOfAuthors() >= minNumberOfAuthor &&
     !isActivated({ npmName })
   ) {
     throw callToActivate({ projectName, npmName });
