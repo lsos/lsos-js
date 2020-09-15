@@ -1,14 +1,51 @@
 import { expirationDates } from "./env/expirationDates";
-import { numberOfAuthors } from "./env/numberOfAuthors";
+import { numberOfAuthors as numberOfAuthorsData } from "./env/numberOfAuthors";
 import { assertUsage } from "./utils/assertUsage";
+
+export { verifyActivation };
 
 export { isActivated };
 export { callToActivate };
 export { activationUrl };
-export { numberOfGitAuthors };
+export { numberOfAuthors };
 export { isDev };
 
-function isActivated(npmName: string): boolean {
+type ProjectInfo = {
+  projectName: string;
+  npmName: string;
+};
+
+function verifyActivation({ projectName, npmName }: ProjectInfo) {
+  const MIN_AUTHOR_NUMBER = 1;
+
+  assertUsage(npmName, "Argument `npmName` is missing.");
+  assertUsage(projectName, "Argument `npmName` is missing.");
+
+  /*
+  {
+    const _isDev = isDev();
+    const _numberOfAuthors = numberOfAuthors();
+    const _isActivated = isActivated({ npmName });
+    console.log({
+      _isDev,
+      _numberOfAuthors,
+      _isActivated,
+      npmName,
+      projectName,
+    });
+  }
+  //*/
+
+  if (
+    isDev() &&
+    numberOfAuthors() >= MIN_AUTHOR_NUMBER &&
+    !isActivated({ npmName })
+  ) {
+    throw callToActivate({ projectName, npmName });
+  }
+}
+
+function isActivated({ npmName }: { npmName: string }): boolean {
   assertUsage(npmName, "Argument `npmName` is missing.");
   if (expirationDates === undefined) {
     // postinstall script wasn't run
@@ -22,25 +59,19 @@ function isActivated(npmName: string): boolean {
   return expirationDate >= new Date().getTime();
 }
 
-function numberOfGitAuthors(): number {
-  if (numberOfAuthors === undefined) {
+function numberOfAuthors(): number {
+  if (numberOfAuthorsData === undefined) {
     // postinstall script wasn't run
     return 0;
   }
-  if (numberOfAuthors === null) {
+  if (numberOfAuthorsData === null) {
     return 0;
   }
   //@ts-ignore
-  return numberOfAuthors;
+  return numberOfAuthorsData;
 }
 
-function callToActivate({
-  projectName,
-  npmName,
-}: {
-  projectName: string;
-  npmName: string;
-}): string {
+function callToActivate({ projectName, npmName }: ProjectInfo): string {
   assertUsage(npmName, "Argument `npmName` is missing.");
   assertUsage(projectName, "Argument `npmName` is missing.");
   return [
