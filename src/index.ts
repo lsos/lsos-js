@@ -1,5 +1,5 @@
 import { expirationDates } from "./env/expirationDates";
-import { numberOfAuthors as numberOfAuthorsData } from "./env/numberOfAuthors";
+import { numberOfAuthors } from "./env/numberOfAuthors";
 import { assertUsage } from "./utils/assertUsage";
 
 export { verifyActivation };
@@ -7,7 +7,7 @@ export { verifyActivation };
 export { isActivated };
 export { callToActivate };
 export { activationUrl };
-export { numberOfAuthors };
+export { numberOfActiveAuthors };
 export { isDev };
 
 type ProjectInfo = {
@@ -18,15 +18,15 @@ type ProjectInfo = {
 function verifyActivation({
   projectName,
   npmName,
-  minNumberOfAuthor = 3,
-}: ProjectInfo & { minNumberOfAuthor: number }) {
+  minNumberOfActiveAuthors = 3,
+}: ProjectInfo & { minNumberOfActiveAuthors: number }) {
   assertUsage(npmName, "Argument `npmName` is missing.");
   assertUsage(projectName, "Argument `npmName` is missing.");
 
   /*
   {
     const _isDev = isDev();
-    const _numberOfAuthors = numberOfAuthors();
+    const _numberOfAuthors = numberOfActiveAuthors();
     const _isActivated = isActivated({ npmName });
     console.log({
       _isDev,
@@ -34,14 +34,14 @@ function verifyActivation({
       _isActivated,
       npmName,
       projectName,
-      minNumberOfAuthor,
+      minNumberOfActiveAuthors,
     });
   }
   //*/
 
   if (
     isDev() &&
-    numberOfAuthors() >= minNumberOfAuthor &&
+    numberOfActiveAuthors() >= minNumberOfActiveAuthors &&
     !isActivated({ npmName })
   ) {
     throw callToActivate({ projectName, npmName });
@@ -62,16 +62,16 @@ function isActivated({ npmName }: { npmName: string }): boolean {
   return expirationDate >= new Date().getTime();
 }
 
-function numberOfAuthors(): number {
-  if (numberOfAuthorsData === undefined) {
+function numberOfActiveAuthors(): number {
+  if (numberOfAuthors === undefined) {
     // postinstall script wasn't run
     return 0;
   }
-  if (numberOfAuthorsData === null) {
+  if (numberOfAuthors === null) {
     return 0;
   }
   //@ts-ignore
-  return numberOfAuthorsData;
+  return numberOfAuthors;
 }
 
 function callToActivate({ projectName, npmName }: ProjectInfo): string {
