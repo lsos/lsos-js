@@ -19,9 +19,11 @@ function verifyActivation({
   projectName,
   npmName,
   minNumberOfActiveAuthors = 3,
-}: ProjectInfo & { minNumberOfActiveAuthors: number }) {
+  throwError,
+}: ProjectInfo & { minNumberOfActiveAuthors: number; throwError: boolean }) {
   assertUsage(npmName, "Argument `npmName` is missing.");
   assertUsage(projectName, "Argument `npmName` is missing.");
+  assertUsage(throwError !== undefined, "Argument `throwError` is missing.");
 
   /*
   {
@@ -44,7 +46,12 @@ function verifyActivation({
     numberOfActiveAuthors() >= minNumberOfActiveAuthors &&
     !isActivated({ npmName })
   ) {
-    throw callToActivate({ projectName, npmName });
+    const msg = callToActivate({ projectName, npmName });
+    if (throwError) {
+      throw msg;
+    } else {
+      console.warn(msg);
+    }
   }
 }
 
