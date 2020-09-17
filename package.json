@@ -1,9 +1,9 @@
 {
   "name": "@lsos/basic",
   "version": "0.1.0",
-  "//": "No dependencies.",
   "dependencies": {
-    "find-up": "^5.0.0"
+    "find-up": "^5.0.0",
+    "@lsos/utils": "0.1.0"
   },
   "main": "dist/index.js",
   "bin": {
