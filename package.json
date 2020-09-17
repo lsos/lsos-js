@@ -1,6 +1,6 @@
 {
   "name": "@lsos/basic",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "//": "No dependencies.",
   "dependencies": {
     "find-up": "^5.0.0"
