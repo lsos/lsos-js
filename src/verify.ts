@@ -1,5 +1,5 @@
 import { expirationDates } from "./env/expirationDates";
-import { numberOfAuthors } from "./env/numberOfAuthors";
+import { numberOfAuthors as numberOfAuthors_data } from "./env/numberOfAuthors";
 import { assertUsage } from "./utils/assertUsage";
 
 export { verify };
@@ -18,12 +18,21 @@ type ProjectInfo = {
 function verify({
   projectName,
   npmName,
-  minNumberOfActiveAuthors = 3,
-  throwError,
-}: ProjectInfo & { minNumberOfActiveAuthors: number; throwError: boolean }) {
+  numberOfAuthors = 3,
+  onlyWarning = false,
+  freeTrial = 0,
+}: ProjectInfo & {
+  numberOfAuthors: number;
+  onlyWarning: boolean;
+  freeTrial: number;
+}) {
   assertUsage(npmName, "Argument `npmName` is missing.");
   assertUsage(projectName, "Argument `npmName` is missing.");
-  assertUsage(throwError !== undefined, "Argument `throwError` is missing.");
+  assertUsage(onlyWarning !== undefined, "Argument `onlyWarning` is missing.");
+  assertUsage(
+    [true, false].includes(onlyWarning),
+    "Argument `onlyWarning` should be `true` or `false`."
+  );
 
   /*
   {
@@ -36,18 +45,19 @@ function verify({
       _isActivated,
       npmName,
       projectName,
-      minNumberOfActiveAuthors,
+      numberOfAuthors,
     });
   }
   //*/
 
   if (
     isDev() &&
-    numberOfActiveAuthors() >= minNumberOfActiveAuthors &&
-    !isActivated({ npmName })
+    numberOfActiveAuthors() >= numberOfAuthors &&
+    !isActivated({ npmName }) &&
+    !isFreeTrial(freeTrial)
   ) {
     const msg = callToActivate({ projectName, npmName });
-    if (throwError) {
+    if (!onlyWarning && blockUser()) {
       throw msg;
     } else {
       console.warn(msg);
@@ -70,15 +80,15 @@ function isActivated({ npmName }: { npmName: string }): boolean {
 }
 
 function numberOfActiveAuthors(): number {
-  if (numberOfAuthors === undefined) {
+  if (numberOfAuthors_data === undefined) {
     // postinstall script wasn't run
     return 0;
   }
-  if (numberOfAuthors === null) {
+  if (numberOfAuthors_data === null) {
     return 0;
   }
   //@ts-ignore
-  return numberOfAuthors;
+  return numberOfAuthors_data;
 }
 
 function callToActivate({ projectName, npmName }: ProjectInfo): string {
@@ -106,5 +116,15 @@ function isDev() {
     );
   }
 
+  return false;
+}
+
+function isFreeTrial(freeTrial: number): boolean {
+  // TODO
+  return false;
+}
+
+function blockUser() {
+  // TODO
   return false;
 }
