@@ -5,11 +5,11 @@
     "find-up": "^5.0.0",
     "@lsos/utils": "0.1.0"
   },
-  "main": "dist/index.js",
+  "main": "dist/verify.js",
   "bin": {
     "lsos": "dist/scripts/cli.js"
   },
-  "types": "dist/index.d.ts",
+  "types": "dist/verify.d.ts",
   "scripts": {
     "dev": "yarn build:prepare && yarn build:dev",
     "prod": "yarn build:prepare && yarn build:prod",
