@@ -2,7 +2,7 @@ import { expirationDates } from "./env/expirationDates";
 import { numberOfAuthors } from "./env/numberOfAuthors";
 import { assertUsage } from "./utils/assertUsage";
 
-export { verifyActivation };
+export { verify };
 
 export { isActivated };
 export { callToActivate };
@@ -15,7 +15,7 @@ type ProjectInfo = {
   npmName: string;
 };
 
-function verifyActivation({
+function verify({
   projectName,
   npmName,
   minNumberOfActiveAuthors = 3,
