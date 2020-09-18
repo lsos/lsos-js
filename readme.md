@@ -35,6 +35,12 @@ To let your user know that they need an activation key, the following happens:
 
 At the moment, it is relatively easy to cheat and circumvent the blocking mechanisms, but we will make it increasingly hard to cheat &mdash; shall too many try.
 
+<p align="center">
+  <img src="/warning.png" />
+  Example of showing a warning to a user who should get a (free) activation key.
+</p>
+
+<br/>
 
 ## Usage
 
@@ -48,10 +54,11 @@ verify({
   // Human-readable project name
   projectName: "My Open Source Project",
 
-  // Skip if the user's repo has had less than 5 Git authors in the last 3 months
+  // Skip if the user's repo has had less than 5 Git authors in the last 3 months.
   numberOfAuthors: 5,
 
-  // Only show warnings: never show "annoying" notifications and never throw errors to block the user
+  // Only show warnings: never show "annoying" notifications and
+  // never throw errors to block the user.
   onlyWarning: false,
 
   // Free trial days
@@ -64,4 +71,6 @@ If you don't feel comfortable forcing your users to purchase an activation key a
 Depending on how you have set up your free-tier, you may want to adjust `numberOfAuthors`.
 For example, if your code is free for companies with <70 software developers, then you may want to increase `numberOfAuthors` to something like `5`.
 Or, if your code is free only for companies with <5 software developers, you may want to decrease `numberOfAuthors` to like `2`.
+
+<br/>
 
