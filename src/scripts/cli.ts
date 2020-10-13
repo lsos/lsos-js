@@ -2,7 +2,12 @@
 
 import { activate } from "./cli/activate";
 import { status } from "./cli/status";
-import { header, fgBold, styleError, styleErrorEmphasis } from "@lsos/utils";
+import {
+  fgBold,
+  styleError,
+  styleErrorEmphasis,
+} from "@lsos/utils/dist/cli-components";
+import { header } from "@lsos/utils/dist/header";
 import assert = require("assert");
 import { EOL } from "os";
 

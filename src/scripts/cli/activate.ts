@@ -1,4 +1,8 @@
-import { symbolInfo, symbolSuccess, stylePath } from "@lsos/utils";
+import {
+  symbolInfo,
+  symbolSuccess,
+  stylePath,
+} from "@lsos/utils/dist/cli-components";
 import assert = require("assert");
 
 import {
@@ -64,4 +68,3 @@ function alreadyAdded(
     ) !== -1
   );
 }
-

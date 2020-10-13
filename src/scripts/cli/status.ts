@@ -1,5 +1,10 @@
 import assert = require("assert");
-import { symbolInfo, fgBold, symbolSuccess, symbolError } from "@lsos/utils";
+import {
+  symbolInfo,
+  fgBold,
+  symbolSuccess,
+  symbolError,
+} from "@lsos/utils/dist/cli-components";
 import { ActivationKey } from "@lsos/utils/dist/activationKey";
 import { getActivationKeys } from "../utils/projectLsosConfig";
 
