@@ -1,10 +1,10 @@
-# `@lsos/basic`
+# `lsos`
 
-Fee enforcer for the [Lsos Basic](https://lsos.org/basic).
+Fee enforcer for the [Lsos](https://lsos.org).
 
-:warning: This readme is meant for open-source maintainers. If you are an open-source user, you don't need to know about the details explained here; if you want more information, check out the [Lsos Basic FAQ](https://lsos.org/basic/faq) instead.
+:warning: This readme is meant for open source developers; if you are a Lsos project user, check out the [Lsos FAQ](https://lsos.org/faq).
 
-The `@lsos/basic` package is about enforcing your fee: if a user that should pay your fee but uses your code without having purchased an activation key, then `@lsos/basic` will `console.warn()` your user, and if your user persists in not paying your fee, it will eventually throw an error blocking the usage of your code.
+The `lsos` package is about enforcing your fee: if a user that should pay your fee but uses your code without having purchased an activation key, then `lsos` will `console.warn()` your user, and if your user persists in not paying your fee, it will eventually throw an error blocking the usage of your code.
 
 <br/>
 
@@ -18,8 +18,8 @@ Everything starts with following question:
 - Does your user's repository has less than `3` Git authors?
 
 If yes,
-then your user doesn't need any activation key and nothing happens; the `@lsos/basic` has no effect whatsoever.
-This means that **the Lsos Basic makes no difference for hobbyists and most small companies**,
+then your user doesn't need any activation key and nothing happens; the `lsos` package has no effect whatsoever.
+This means that **the Lsos makes no difference for hobbyists and most small companies**,
 since there is nothing they need to do to use your code
 and your code remains MIT licensed.
 
@@ -45,7 +45,7 @@ At the moment, it is relatively easy to cheat and circumvent the blocking mechan
 ## Usage
 
 ~~~js
-import { verify } from "@lsos/basic";
+import { verify } from "lsos";
 
 verify({
   // Package name on npm

@@ -1,3 +1,2 @@
-// `expirationDates` is determined and set by the Node.js postinstall script.
-// `expirationDates` is consumed by the code consuming the `@lsos/basic` package.
+// The `expirationDates` value is determined and set in the postinstall step.
 export const expirationDates = undefined;

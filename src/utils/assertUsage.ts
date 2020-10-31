@@ -5,5 +5,5 @@ function assertUsage(bool: any, errorMsg: string) {
     return;
   }
 
-  throw new Error("[@lsos/basic] " + errorMsg);
+  throw new Error("[lsos] " + errorMsg);
 }

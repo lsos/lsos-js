@@ -1,3 +1,2 @@
-// `numberOfAuthors` is determined and set by the Node.js postinstall script.
-// `numberOfAuthors` is consumed by the code consuming the `@lsos/basic` package.
+// The `numberOfAuthors` value is determined and set in the postinstall step.
 export const numberOfAuthors = undefined;
