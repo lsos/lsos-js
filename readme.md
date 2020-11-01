@@ -33,10 +33,10 @@ verify({
 The `verify()` function throws an error if your user doesn't have an activation key,
 with following exception:
 - The user's repository had less than `minNumberOfAuthors` Git authors in the last 3 months.
-  (If the repo has few authors we consider it to be a "small" project and the `verify()` has no effects whatsoever.)
+  (If the repo has few authors we consider it to be a "small" project; the user can use your code without activation key and the `verify()` has no effects whatsoever.)
 - The user's repository is public. (This means that your project can be developed and contributed to without activation key.)
 - The free trial didn't end. (A `console.info` is shown to the user letting him know that he is using a free trial.)
-- The `onlyWarning` option is set to `true`. (A `console.warn` is shown instead of throwing an error. This means that users can indefinitely use your code without activation key. This trust-based practice has shown many successes in the past such as Sublime Text.)
+- The `onlyWarning` option is set to `true`. (A `console.warn` is shown instead of throwing an error. This means that users can indefinitely use your code without activation key. Such trust-based practice has shown many successes in the past, for example Sublime Text.)
 
 Make sure that when `verify()` throws an error that it actually blocks the usage of your code.
 
