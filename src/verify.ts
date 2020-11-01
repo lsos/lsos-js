@@ -4,12 +4,6 @@ import { assertUsage } from "./utils/assertUsage";
 
 export { verify };
 
-export { isActivated };
-export { callToActivate };
-export { activationUrl };
-export { numberOfActiveAuthors };
-export { isDev };
-
 type ProjectInfo = {
   projectName: string;
   npmName: string;
@@ -18,13 +12,13 @@ type ProjectInfo = {
 function verify({
   projectName,
   npmName,
-  numberOfAuthors = 3,
+  minNumberOfAuthors = 3,
   onlyWarning = false,
-  freeTrial = 0,
+  freeTrialDays = 7,
 }: ProjectInfo & {
-  numberOfAuthors: number;
+  minNumberOfAuthors: number;
   onlyWarning: boolean;
-  freeTrial: number;
+  freeTrialDays: number;
 }) {
   assertUsage(npmName, "Argument `npmName` is missing.");
   assertUsage(projectName, "Argument `npmName` is missing.");
@@ -34,27 +28,13 @@ function verify({
     "Argument `onlyWarning` should be `true` or `false`."
   );
 
-  /*
-  {
-    const _isDev = isDev();
-    const _numberOfAuthors = numberOfActiveAuthors();
-    const _isActivated = isActivated({ npmName });
-    console.log({
-      _isDev,
-      _numberOfAuthors,
-      _isActivated,
-      npmName,
-      projectName,
-      numberOfAuthors,
-    });
-  }
-  //*/
+  debugLog(npmName, minNumberOfAuthors);
 
   if (
     isDev() &&
-    numberOfActiveAuthors() >= numberOfAuthors &&
-    !isActivated({ npmName }) &&
-    !isFreeTrial(freeTrial)
+    getNumberOfAuthors() >= minNumberOfAuthors &&
+    !isActivated(npmName) &&
+    !isFreeTrial(freeTrialDays)
   ) {
     const msg = callToActivate({ projectName, npmName });
     if (!onlyWarning && blockUser()) {
@@ -65,7 +45,7 @@ function verify({
   }
 }
 
-function isActivated({ npmName }: { npmName: string }): boolean {
+function isActivated(npmName: string): boolean {
   assertUsage(npmName, "Argument `npmName` is missing.");
   if (expirationDates === undefined) {
     // postinstall script wasn't run
@@ -79,7 +59,7 @@ function isActivated({ npmName }: { npmName: string }): boolean {
   return expirationDate >= new Date().getTime();
 }
 
-function numberOfActiveAuthors(): number {
+function getNumberOfAuthors(): number {
   if (numberOfAuthors_data === undefined) {
     // postinstall script wasn't run
     return 0;
@@ -119,7 +99,7 @@ function isDev() {
   return false;
 }
 
-function isFreeTrial(freeTrial: number): boolean {
+function isFreeTrial(freeTrialDays: number): boolean {
   // TODO
   return false;
 }
@@ -127,4 +107,14 @@ function isFreeTrial(freeTrial: number): boolean {
 function blockUser() {
   // TODO
   return false;
+}
+
+function debugLog(npmName: string, minNumberOfAuthors: number): void {
+  console.log({
+    isDev: isDev(),
+    isActivated: isActivated(npmName),
+    numberOfAuthors: getNumberOfAuthors(),
+    minNumberOfAuthors,
+    npmName,
+  });
 }

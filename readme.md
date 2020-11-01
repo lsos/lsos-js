@@ -1,76 +1,48 @@
-# `lsos`
+# Lsos Library for JavaScript
 
-Fee enforcer for the [Lsos](https://lsos.org).
+:information_source: This readme is meant for open source developers; if you are an Lsos project user see the [Lsos FAQ](https://lsos.org/faq) instead.
 
-:warning: This readme is meant for open source developers; if you are a Lsos project user, check out the [Lsos FAQ](https://lsos.org/faq).
+The Lsos Library enforces your fee: if a company uses your code without activation key, the library will `console.warn()` the company, and if the company persists in not getting an activation key, it will throw an error blocking the usage of your code.
 
-The `lsos` package is about enforcing your fee: if a user that should pay your fee but uses your code without having purchased an activation key, then `lsos` will `console.warn()` your user, and if your user persists in not paying your fee, it will eventually throw an error blocking the usage of your code.
-
-<br/>
-
-[How it works](#how-it-works)
-<br/>
-[Usage](#usage)
-
-## How it works
-
-Everything starts with following question:
-- Does your user's repository has less than `3` Git authors?
-
-If yes,
-then your user doesn't need any activation key and nothing happens; the `lsos` package has no effect whatsoever.
-This means that **the Lsos makes no difference for hobbyists and most small companies**,
-since there is nothing they need to do to use your code
-and your code remains MIT licensed.
-
-If no,
-then the user needs a (free) activation key.
-To let your user know that they need an activation key, the following happens:
-1. During the free trial, nothing happens; the user can use your code without activation key.
-2. After the free trial, a `console.warn()` is shown to your user saying that an activation key is required, but your user can still use your code without activation key.
-3. After a while, if your user still didn't get a (free) activation key, we notify her in a more annoying way. For example, if your code runs in the browser, a `window.alert()` is shown instead of a mere `console.warn()`.
-4.  If your user persists in not purchasing an activation key, eventually an error is thrown blocking the usage of your code.
-
-**We appeal to the sympathy of your users have towards you, your project, and open source in general, rather than forcing; we use force as last resort.**
-
-At the moment, it is relatively easy to cheat and circumvent the blocking mechanisms, but we will make it increasingly hard to cheat &mdash; shall too many try.
-
-<p align="center">
-  <img src="/warning.png" />
-  Example of showing a warning to a user who should get a (free) activation key.
-</p>
-
-<br/>
+The `lsos` npm package works in the browser as well as in Node.js.
 
 ## Usage
 
 ~~~js
-import { verify } from "lsos";
+import { verify } from "lsos"; // npm install lsos
 
 verify({
-  // Package name on npm
+  // Your npm package name
   npmName: "my-open-source-project",
 
-  // Human-readable project name
+  // Your project name
   projectName: "My Open Source Project",
 
-  // Skip if the user's repo has had less than 5 Git authors in the last 3 months.
-  numberOfAuthors: 5,
+  // Only require an activation key when the user's repository had
+  // `minNumberOfAuthors` Git authors in the last 3 months
+  minNumberOfAuthors: 3, // Default value
 
-  // Only show warnings: never show "annoying" notifications and
-  // never throw errors to block the user.
-  onlyWarning: false,
+  // Show a `console.warn` instead of blocking the user.
+  onlyWarning: false, // Default value
 
-  // Free trial days
-  freeTrial: 31,
+  // Free trial
+  freeTrialDays: 7 // Default value
 });
 ~~~
 
-If you don't feel comfortable forcing your users to purchase an activation key and you'd rather trust that your users will do the "right" thing, then you can set `onlyWarning: true` which will ensure that nothing annoying happens for your users. No `window.alert()`, no `throw`, no `process.exit()`, etc.
+The `verify()` function throws an error if your user doesn't have an activation key,
+with following exception:
+- The user's repository has had less than `minNumberOfAuthors` Git authors in the last 3 months.
+  (If the repo has few authors we consider it to be a "small" project and the `verify()` has no effects whatsoever.)
+- The user's repository is public. (This means that your project can be developed and contributed to without activation key.)
+- The free trial didn't end. (A `console.info` is shown to the user letting him know that he is using a free trial.)
+- The `onlyWarning` option is set to `true`. (A `console.warn` is shown to the user and `verify()` never throws. This means that users can use your code without activation key indefinitely. This practice based on trust is common and shown many success in the past such as Sublime Text.)
 
-Depending on how you have set up your free-tier, you may want to adjust `numberOfAuthors`.
-For example, if your code is free for companies with <70 software developers, then you may want to increase `numberOfAuthors` to something like `5`.
-Or, if your code is free only for companies with <5 software developers, you may want to decrease `numberOfAuthors` to like `2`.
+Make sure that when `verify()` throws an error that it actually blocks the usage of your code.
+
+<p align="center">
+  <img src="/warning.png" />
+</p>
 
 <br/>
 
