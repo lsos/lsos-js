@@ -1,6 +1,6 @@
 # Lsos Library for JavaScript
 
-:information_source: This readme is meant for open source developers.
+:information_source: This readme is meant for Lsos project developers.
 
 The Lsos Library enforces your fee: if a company uses your code without activation key, the library will show a `console.warn()`, and if the company persists in not getting an activation key, it will throw an error blocking the usage of your code.
 
