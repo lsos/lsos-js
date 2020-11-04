@@ -1,19 +1,48 @@
-import { execCmd } from "../../utils/execCmd";
 import { splitByLine, splitByWhitespace } from "../../utils/split";
 import assert = require("assert");
+import { runGitCommand } from "../../utils/runGitCommand";
 
 export { retrieveNumberOfAuthors };
 
 const MIN_NUMBER_OF_COMMITS = 5;
 const LOOKUP_PERIOD = getDateAgo({ month: 3 });
 
+type Author = {
+  name: string;
+  email: string;
+  numberOfCommits: number;
+};
+
 async function retrieveNumberOfAuthors(): Promise<number | null> {
-  const gitAuthorList = await getGitAuthorList();
-  if (!gitAuthorList) {
+  const authors: Author[] | null = await getAuthors();
+
+  if (authors === null) return null;
+
+  const numberOfAuthors = filterAuthors(authors);
+
+  return numberOfAuthors;
+}
+
+async function getAuthors(): Promise<Author[] | null> {
+  const output = await retrieveAuthors();
+  if (!output) return null;
+  const authors: Author[] = parseOutput(output);
+  return authors;
+}
+
+async function retrieveAuthors(): Promise<string | null> {
+  try {
+    // To get authors with commit dates:
+    //   git log --pretty=format:"%an %ae %ad" --date=short
+    const cmd = `git shortlog --summary --numbered --email --all --after ${LOOKUP_PERIOD}`;
+    return (await runGitCommand(cmd)).stdout;
+  } catch (_) {
     return null;
   }
+}
 
-  const authors = splitByLine(gitAuthorList)
+function parseOutput(output: string): Author[] {
+  const authors = splitByLine(output)
     .filter(Boolean)
     .map((authorSummary) => {
       const parts = splitByWhitespace(authorSummary).filter(Boolean);
@@ -36,9 +65,15 @@ async function retrieveNumberOfAuthors(): Promise<number | null> {
       return { name, email, numberOfCommits };
     });
 
+  return authors;
+}
+
+function filterAuthors(authors: Author[]): number {
   let numberOfAuthors = 0;
+
   const authorNames: { [key: string]: boolean } = {};
   const authorEmails: { [key: string]: boolean } = {};
+
   authors.forEach(({ numberOfCommits, name, email }) => {
     // We consider someone an author only if he commited at least `MIN_NUMBER_OF_COMMITS`
     if (numberOfCommits < MIN_NUMBER_OF_COMMITS) {
@@ -72,17 +107,6 @@ async function retrieveNumberOfAuthors(): Promise<number | null> {
   });
 
   return numberOfAuthors;
-}
-
-async function getGitAuthorList(): Promise<string | null> {
-  try {
-    // To get authors with commit dates:
-    //   git log --pretty=format:"%an %ae %ad" --date=short
-    const cmd = `git shortlog --summary --numbered --email --all --after ${LOOKUP_PERIOD}`;
-    return await execCmd(cmd);
-  } catch (_) {
-    return null;
-  }
 }
 
 function getDateAgo({ month }: { month: number }): string {

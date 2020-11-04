@@ -1,4 +1,4 @@
-const { execCmd } = require("../../../dist/utils/execCmd");
+const { execCmd } = require("../../../dist/utils/runGitCommand/execCmd");
 
 test();
 

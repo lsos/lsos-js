@@ -56,26 +56,30 @@ async function getGithubRepo(): Promise<GitHubRepo | null> {
 }
 
 function findGitHubRepo(text: string): GitHubRepo | null {
-  [
-    // git remote -v
-    `origin	git@github.com:Lsos/utils (fetch)
-origin	git@github.com:Lsos/utils (push)`,
-    // git config --get remote.origin.url
-    // git remote get-url --all origin
-    `git@github.com:Lsos/utils`,
-    // Edge cases
-    `https://github.com/Lsos/utils`,
-    `https://github.com/Lsos/utils/`,
-    `git@github.com:Lsos/utils.git/`,
-  ].forEach((testString) => {
-    const repo = find(testString);
-    assert(repo);
-    const { username, repository } = repo;
-    assert(username === "Lsos");
-    assert(["utils", "utils.git"].includes(repository));
-  });
+  test();
 
   return find(text);
+
+  function test() {
+    [
+      // git remote -v
+      `origin	git@github.com:Lsos/utils (fetch)
+  origin	git@github.com:Lsos/utils (push)`,
+      // git config --get remote.origin.url
+      // git remote get-url --all origin
+      `git@github.com:Lsos/utils`,
+      // Edge cases
+      `https://github.com/Lsos/utils`,
+      `https://github.com/Lsos/utils/`,
+      `git@github.com:Lsos/utils.git/`,
+    ].forEach((testString) => {
+      const repo = find(testString);
+      assert(repo);
+      const { username, repository } = repo;
+      assert(username === "Lsos");
+      assert(["utils", "utils.git"].includes(repository));
+    });
+  }
 
   function find(text: string): GitHubRepo | null {
     // Lazy implementation:

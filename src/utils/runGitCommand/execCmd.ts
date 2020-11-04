@@ -11,6 +11,14 @@ type ExecError = ExecException & {
 function execCmd(cmd: string, options: { cwd?: string } = {}): Promise<string> {
   const { promise, resolvePromise, rejectPromise } = genPromise();
 
+  const timeout = setTimeout(() => {
+    console.error("Failed command: " + cmd);
+    console.error(
+      `[Lsos] A command call is is hanging. Open an issue at \`https://github.com/Lsos/lsos-js/issues/new\`. The command that is hanging is: \`${cmd}\`.`
+    );
+    process.exit();
+  }, 0 * 1000);
+
   exec(cmd, options, (err, stdout, stderr) => {
     if (err) {
       const execError: ExecError = {
@@ -18,10 +26,12 @@ function execCmd(cmd: string, options: { cwd?: string } = {}): Promise<string> {
         stdout,
         stderr,
       };
+      clearTimeout(timeout);
       rejectPromise(execError);
       return;
     }
     assert(stdout.constructor === String);
+    clearTimeout(timeout);
     resolvePromise(stdout);
     return;
   });
