@@ -7,13 +7,19 @@ import { header } from "./components/header";
 import assert = require("assert");
 import { EOL } from "os";
 
-try {
-  cli();
-} catch (err) {
-  console.error(err);
-}
+process.on("unhandledRejection", console.error);
+
+cli();
 
 async function cli() {
+  try {
+    await runCli();
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+async function runCli() {
   console.log(header);
   console.log();
 
