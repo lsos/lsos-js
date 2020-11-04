@@ -76,7 +76,7 @@ function showHelp() {
       "",
       "Commands:",
       `  ${cmdColor("activate")}  Add activation key`,
-      `  ${cmdColor("status")}    Show expiration status of added keys`,
+      `  ${cmdColor("status")}    Show expiration dates of activation keys`,
       `  ${cmdColor("help")}      Display this help information`,
       "",
     ].join(EOL)
