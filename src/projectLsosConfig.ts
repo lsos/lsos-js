@@ -1,9 +1,10 @@
 import assert = require("assert");
 import { EOL } from "os";
-import { isAbsolute as pathIsAbsolute } from "path";
+import { isAbsolute as pathIsAbsolute, join as pathJoin } from "path";
 import { writeFileSync, readFileSync } from "fs";
 import { ActivationKey } from "./activationKey";
 import findUp = require("find-up");
+const CONFIG_FILENAME = ".lsos.json";
 
 export { getActivationKeys };
 export { readProjectLsosConfigFile };
@@ -35,7 +36,8 @@ async function writeProjectLsosConfigFile(
   projectLsosConfig: ProjectLsosConfig
 ) {
   assert(projectLsosConfig.constructor === Object);
-  writeJsonFile(await getProjectLsosConfigPath(), projectLsosConfig);
+  const configPath = await getProjectLsosConfigPath();
+  writeJsonFile(configPath, projectLsosConfig);
 }
 
 var configPath: string;
@@ -44,12 +46,14 @@ async function getProjectLsosConfigPath(): Promise<string> {
     const found = await findConfigFile();
     if (found) {
       configPath = found;
+    } else {
+      configPath = pathJoin(process.cwd(), CONFIG_FILENAME);
     }
   }
   return configPath;
 }
-async function findConfigFile() {
-  const lsosConfigPath = await findUp(".lsos.json");
+async function findConfigFile(): Promise<undefined | string> {
+  const lsosConfigPath = await findUp(CONFIG_FILENAME);
   assert(lsosConfigPath === undefined || pathIsAbsolute(lsosConfigPath));
   return lsosConfigPath;
 }

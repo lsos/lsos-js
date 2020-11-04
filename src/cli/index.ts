@@ -7,7 +7,11 @@ import { header } from "./components/header";
 import assert = require("assert");
 import { EOL } from "os";
 
-cli();
+try {
+  cli();
+} catch (err) {
+  console.error(err);
+}
 
 async function cli() {
   console.log(header);
