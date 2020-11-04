@@ -2,12 +2,11 @@
   "name": "lsos",
   "version": "0.1.0",
   "dependencies": {
-    "find-up": "^5.0.0",
-    "@lsos/utils": "*"
+    "find-up": "^5.0.0"
   },
   "main": "dist/verify.js",
   "bin": {
-    "lsos": "dist/scripts/cli.js"
+    "lsos": "dist/cli/index.js"
   },
   "types": "dist/verify.d.ts",
   "scripts": {
@@ -17,12 +16,12 @@
     "build:prod": "tsc",
     "build:prepare": "yarn build:clean && yarn build:permissions",
     "build:clean": "rm -rf dist/",
-    "build:permissions": "(mkdir -p dist/scripts/ && cd dist/scripts/ && touch cli.js postinstall.js && chmod 775 cli.js postinstall.js)",
-    "postinstall": "node -e \"try{require('./dist/scripts/postinstall')}catch(err){console.log('====== Warning ======');console.log(err);}\"",
+    "build:permissions": "(mkdir -p dist/cli/ && mkdir -p dist/postinstall/ && touch dist/cli/index.js dist/postinstall/index.js && chmod 775 dist/cli/index.js dist/postinstall/index.js)",
+    "postinstall": "node -e \"try{require('./dist/postinstall/index.js')}catch(err){console.log('====== Warning ======');console.log(err);}\"",
     "prepublishOnly": "yarn prod"
   },
   "devDependencies": {
-    "@types/node": "^14.0.23",
+    "@types/node": "^14.14.6",
     "typescript": "^4.0.2"
   },
   "files": [

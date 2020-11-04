@@ -11,6 +11,5 @@
     "lib": ["ES2020", "ES2019.Object", "DOM"],
     "resolveJsonModule": true
   },
-  "include": ["src/**/*"],
-  "references": [{ "path": "../lsos-utils" }]
+  "include": ["src/**/*"]
 }

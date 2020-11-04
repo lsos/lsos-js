@@ -1,13 +1,9 @@
 #!/usr/bin/env node
 
-import { activate } from "./cli/activate";
-import { status } from "./cli/status";
-import {
-  fgBold,
-  styleError,
-  styleErrorEmphasis,
-} from "@lsos/utils/dist/cli-components";
-import { header } from "@lsos/utils/dist/header";
+import { activate } from "./commands/activate";
+import { status } from "./commands/status";
+import { fgBold, styleError, styleErrorEmphasis } from "./components/colors";
+import { header } from "./components/header";
 import assert = require("assert");
 import { EOL } from "os";
 

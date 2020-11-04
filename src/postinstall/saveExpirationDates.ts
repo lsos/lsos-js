@@ -1,5 +1,8 @@
-import { replaceFileContent } from "@lsos/utils/dist/replaceFileContent";
-import { getPurchasedDaysLeft, PurchasedDaysLeft } from "../cli/status";
+import { replaceFileContent } from "../utils/replaceFileContent";
+import {
+  getPurchasedDaysLeft,
+  PurchasedDaysLeft,
+} from "../cli/commands/status";
 
 type ExpirationDates = { [key: string]: number };
 

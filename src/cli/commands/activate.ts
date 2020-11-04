@@ -1,21 +1,17 @@
-import {
-  symbolInfo,
-  symbolSuccess,
-  stylePath,
-} from "@lsos/utils/dist/cli-components";
-import assert = require("assert");
-
+import { symbolInfo, symbolSuccess } from "../components/symbols";
+import { stylePath } from "../components/colors";
 import {
   decodeActivationKey,
   signatureVerify,
   ActivationKey,
-} from "@lsos/utils/dist/activationKey";
+} from "../../activationKey";
 import {
   getProjectLsosConfigPath,
   ProjectLsosConfig,
   readProjectLsosConfigFile,
   writeProjectLsosConfigFile,
-} from "../utils/projectLsosConfig";
+} from "../../projectLsosConfig";
+import assert = require("assert");
 
 export { activate };
 

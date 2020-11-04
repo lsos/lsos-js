@@ -2,7 +2,7 @@ import assert = require("assert");
 import { EOL } from "os";
 import { isAbsolute as pathIsAbsolute } from "path";
 import { writeFileSync, readFileSync } from "fs";
-import { ActivationKey } from "@lsos/utils/dist/activationKey";
+import { ActivationKey } from "./activationKey";
 import findUp = require("find-up");
 
 export { getActivationKeys };

@@ -1,12 +1,8 @@
 import assert = require("assert");
-import {
-  symbolInfo,
-  fgBold,
-  symbolSuccess,
-  symbolError,
-} from "@lsos/utils/dist/cli-components";
-import { ActivationKey } from "@lsos/utils/dist/activationKey";
-import { getActivationKeys } from "../utils/projectLsosConfig";
+import { symbolInfo, symbolSuccess, symbolError } from "../components/symbols";
+import { fgBold } from "../components/colors";
+import { ActivationKey } from "../../activationKey";
+import { getActivationKeys } from "../../projectLsosConfig";
 
 export { getPurchasedDaysLeft };
 

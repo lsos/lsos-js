@@ -1,5 +1,5 @@
-import { saveExpirationDates } from "./postinstall/saveExpirationDates";
-import { saveNumberOfAuthors } from "@lsos/utils/dist/saveNumberOfAuthors/index";
+import { saveExpirationDates } from "./saveExpirationDates";
+import { saveNumberOfAuthors } from "./saveNumberOfAuthors/index";
 
 postinstall();
 
