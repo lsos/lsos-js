@@ -9,15 +9,17 @@ export { encodeActivationKey };
 export { signatureVerify };
 export { signatureCreate };
 
-export type ActivationKeyData = {
+export type ActivationKeyDataWithoutIssueDate = {
   tool: string;
   company: {
     name: string;
     website: string;
   };
   purchasedDays: number;
-  issueDate: string;
   keyWasFree?: boolean;
+};
+export type ActivationKeyData = ActivationKeyDataWithoutIssueDate & {
+  issueDate: string;
 };
 export type ActivationKey = ActivationKeyData & {
   signature: string;
