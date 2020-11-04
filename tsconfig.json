@@ -5,8 +5,9 @@
     "target": "es5",
     "module": "commonjs",
     "declaration": true,
-    "composite": true,
+    "declarationMap": true,
     "sourceMap": true,
+    "composite": true,
     "strict": true,
     "lib": ["ES2020", "ES2019.Object", "DOM"],
     "resolveJsonModule": true
