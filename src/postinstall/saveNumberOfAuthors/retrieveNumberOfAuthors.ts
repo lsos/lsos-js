@@ -31,14 +31,12 @@ async function getAuthors(): Promise<Author[] | null> {
 }
 
 async function retrieveAuthors(): Promise<string | null> {
-  try {
-    // To get authors with commit dates:
-    //   git log --pretty=format:"%an %ae %ad" --date=short
-    const cmd = `git shortlog --summary --numbered --email --all --after ${LOOKUP_PERIOD}`;
-    return (await runGitCommand(cmd)).stdout;
-  } catch (_) {
-    return null;
-  }
+  // To get authors with commit dates:
+  //   git log --pretty=format:"%an %ae %ad" --date=short
+  const cmd = `git shortlog --summary --numbered --email --all --after ${LOOKUP_PERIOD}`;
+  const res = await runGitCommand(cmd);
+  if ("isError" in res) return null;
+  return res.stdout;
 }
 
 function parseOutput(output: string): Author[] {

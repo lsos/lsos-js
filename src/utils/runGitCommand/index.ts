@@ -12,29 +12,33 @@ export { runGitCommand };
 async function runGitCommand(
   gitCommand: GitCommand
 ): Promise<GitCommandResult> {
-  try {
-    await execCmd("git --version");
-  } catch (err) {
+  if (await gitIsMissing()) {
     return {
-      gitIsMissing: true,
-      commandFailed: true,
       stdout: "",
+      commandFailed: true,
+      gitIsMissing: true,
     };
   }
 
-  try {
-    const stdout = await execCmd(gitCommand);
-    return {
-      stdout,
-      commandFailed: false,
-      gitIsMissing: false,
-    };
-  } catch (err) {
-    const { stdout } = err;
+  const res = await execCmd(gitCommand);
+  const { stdout } = res;
+
+  if ("isError" in res) {
     return {
       stdout,
       commandFailed: true,
       gitIsMissing: false,
     };
   }
+
+  return {
+    stdout,
+    commandFailed: false,
+    gitIsMissing: false,
+  };
+}
+
+async function gitIsMissing() {
+  const res = await execCmd("git --version");
+  return "isError" in res;
 }

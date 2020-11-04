@@ -3,46 +3,53 @@ import assert = require("assert");
 
 export { execCmd };
 
-type ExecError = ExecException & {
+type ExecResult = {
   stdout: string;
-  stderr: string;
 };
+type ExecError = ExecException &
+  ExecResult & {
+    isError: true;
+    stderr: string;
+  };
 
-function execCmd(cmd: string, options: { cwd?: string } = {}): Promise<string> {
-  const { promise, resolvePromise, rejectPromise } = genPromise();
+function execCmd(
+  cmd: string,
+  options: { cwd?: string } = {}
+): Promise<ExecError | ExecResult> {
+  const { promise, resolvePromise } = genPromise<ExecError | ExecResult>();
 
   const timeout = setTimeout(() => {
-    console.error("Failed command: " + cmd);
     console.error(
-      `[Lsos] A command call is is hanging. Open an issue at \`https://github.com/Lsos/lsos-js/issues/new\`. The command that is hanging is: \`${cmd}\`.`
+      `[Lsos] Command call is hanging. Open an issue at \`https://github.com/Lsos/lsos-js/issues/new\`. The command that is hanging is: \`${cmd}\`.`
     );
     process.exit();
-  }, 0 * 1000);
+  }, 5 * 1000);
 
   exec(cmd, options, (err, stdout, stderr) => {
     if (err) {
       const execError: ExecError = {
         ...err,
+        isError: true,
         stdout,
         stderr,
       };
       clearTimeout(timeout);
-      rejectPromise(execError);
+      resolvePromise(execError);
       return;
     }
     assert(stdout.constructor === String);
     clearTimeout(timeout);
-    resolvePromise(stdout);
+    resolvePromise({ stdout });
     return;
   });
 
   return promise;
 }
 
-function genPromise() {
-  let resolvePromise!: (value?: any) => void;
-  let rejectPromise!: (value?: any) => void;
-  const promise: Promise<any> = new Promise((resolve, reject) => {
+function genPromise<T>() {
+  let resolvePromise!: (value?: T) => void;
+  let rejectPromise!: (value?: T) => void;
+  const promise: Promise<T> = new Promise((resolve, reject) => {
     resolvePromise = resolve;
     rejectPromise = reject;
   });

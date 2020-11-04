@@ -1,5 +1,5 @@
 import { saveExpirationDates } from "./saveExpirationDates";
-import { saveNumberOfAuthors } from "./saveNumberOfAuthors/index";
+import { saveNumberOfAuthors } from "./saveNumberOfAuthors";
 
 postinstall();
 
