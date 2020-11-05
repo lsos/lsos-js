@@ -10,15 +10,15 @@
   },
   "types": "dist/verify.d.ts",
   "scripts": {
-    "dev": "yarn build:prepare && yarn build:dev",
-    "prod": "yarn build:prepare && yarn build:prod",
-    "build:dev": "tsc --watch",
-    "build:prod": "tsc",
-    "build:prepare": "yarn build:clean && yarn build:permissions",
-    "build:clean": "rm -rf dist/",
-    "build:permissions": "(mkdir -p dist/cli/ && mkdir -p dist/postinstall/ && touch dist/cli/index.js dist/postinstall/index.js && chmod 775 dist/cli/index.js dist/postinstall/index.js)",
+    "// Post-install": "",
     "postinstall": "node -e \"try{require('./dist/postinstall/index.js')}catch(err){console.log('====== Warning ======');console.log(err);}\"",
-    "prepublishOnly": "yarn prod"
+    "// Build": "",
+    "build": "yarn build:clean && yarn build:transpile && yarn build:binaries",
+    "build:clean": "rm -rf dist/",
+    "build:transpile": "tsc",
+    "build:binaries": "(mkdir -p dist/cli/ && mkdir -p dist/postinstall/ && touch dist/cli/index.js dist/postinstall/index.js && chmod 775 dist/cli/index.js dist/postinstall/index.js)",
+    "// Release": "",
+    "release": "yarn build && npm run publish"
   },
   "devDependencies": {
     "@types/node": "^14.14.6",
@@ -28,7 +28,7 @@
     "/dist/",
     "/src/"
   ],
-  "repository": "github:lsos/lsos",
+  "repository": "github:lsos/lsos-js",
   "publishConfig": {
     "access": "public"
   }
