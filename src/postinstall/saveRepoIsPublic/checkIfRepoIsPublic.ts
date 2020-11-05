@@ -48,8 +48,10 @@ async function getGithubRepo(): Promise<GitHubRepo | null> {
   // git remote get-url --all origin
   // git remote -v
   // git config --get remote.origin.url
-  const { gitIsMissing, stdout } = await runGitCommand("git remote -v");
-  if (gitIsMissing) {
+  const { gitIsMissing, commandFailed, stdout } = await runGitCommand(
+    "git remote -v"
+  );
+  if (gitIsMissing || commandFailed) {
     return null;
   }
   return findGitHubRepo(stdout);
@@ -88,7 +90,7 @@ function findGitHubRepo(text: string): GitHubRepo | null {
     for (const line of splitByLine(text)) {
       for (const word of splitByWhitespace(line)) {
         if (word.includes("github.com")) {
-          const segments = word.split("/").filter(Boolean);
+          const segments = word.split(/\/|:/).filter(Boolean);
           const username = segments.slice(-2, -1)[0];
           const repository = segments.slice(-1)[0];
           if (username && repository) {
