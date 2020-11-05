@@ -1,28 +1,47 @@
-import { runGitCommand } from "../../utils/runGitCommand";
-import { splitByLine, splitByWhitespace } from "../../utils/split";
+import { runGitCommand } from "../utils/runGitCommand";
+import { splitByLine, splitByWhitespace } from "../utils/split";
 import assert = require("assert");
 
-export { checkIfRepoIsPublic };
+export { getRepoIsPublic };
 
+type OrgName = string & { _brand?: "OrgName" };
+type RepoName = string & { _brand?: "RepoName" };
+type RepoUrl = string & { _brand?: "RepoUrl" };
 type GitHubRepo = {
-  username: string & { _brand?: "username" };
-  repository: string & { _brand?: "repository" };
+  orgName: OrgName;
+  repoName: RepoName;
+  repoUrl: RepoUrl;
+};
+type RepoInfo = {
+  isPublic: null | true | false;
+  orgName: null | OrgName;
+  repoName: null | RepoName;
+  repoUrl: null | RepoUrl;
+  cwd: string;
 };
 
-async function checkIfRepoIsPublic(): Promise<boolean | null> {
+async function getRepoIsPublic(): Promise<RepoInfo> {
   const repo = await getGithubRepo();
-  if (repo === null) {
-    return null;
-  }
-  assert(repo.username && repo.repository);
+  assert(repo === null || (repo.orgName && repo.repoName));
+  const orgName = repo && repo.orgName;
+  const repoName = repo && repo.repoName;
+  const repoUrl = repo && repo.repoUrl;
 
-  const isPublic = await repoIsPublic(repo);
-  if (isPublic === null) {
-    return null;
+  let isPublic = null;
+  if (repo) {
+    isPublic = await repoIsPublic(repo);
+    assert([true, false, null].includes(isPublic));
   }
-  assert([true, false].includes(isPublic));
 
-  return isPublic;
+  const cwd = process.cwd();
+
+  return {
+    isPublic,
+    repoUrl,
+    orgName,
+    repoName,
+    cwd,
+  };
 }
 
 async function repoIsPublic(repo: GitHubRepo): Promise<boolean | null> {
@@ -30,9 +49,9 @@ async function repoIsPublic(repo: GitHubRepo): Promise<boolean | null> {
   // git ls-remote https://fakeuser:fakepassword@github.com/Lsos/lsos.git
   // git ls-remote https://fakeuser:fakepassword@github.com/Lsos/lsos-demo
   // git ls-remote https://fakeuser:fakepassword@github.com/Lsos/lsos-demo.git
-  const { username, repository } = repo;
+  const { orgName, repoName } = repo;
   const { gitIsMissing, commandFailed } = await runGitCommand(
-    `git ls-remote https://fakeuser:fakepassword@github.com/${username}/${repository}`
+    `git ls-remote https://fakeuser:fakepassword@github.com/${orgName}/${repoName}`
   );
 
   if (gitIsMissing) {
@@ -77,24 +96,24 @@ function findGitHubRepo(text: string): GitHubRepo | null {
     ].forEach((testString) => {
       const repo = find(testString);
       assert(repo);
-      const { username, repository } = repo;
-      assert(username === "Lsos");
-      assert(["utils", "utils.git"].includes(repository));
+      const { orgName, repoName } = repo;
+      assert(orgName === "Lsos");
+      assert(["utils", "utils.git"].includes(repoName));
     });
   }
 
   function find(text: string): GitHubRepo | null {
     // Lazy implementation:
     //  - We only consider the first encountered GitHub URL
-    //  - We assume the GitHub URL to end with `username/repository` (`repository` ending with `.git` is fine)
+    //  - We assume the GitHub URL to end with `orgName/repoName` (`repoName` ending with `.git` is fine)
     for (const line of splitByLine(text)) {
-      for (const word of splitByWhitespace(line)) {
-        if (word.includes("github.com")) {
-          const segments = word.split(/\/|:/).filter(Boolean);
-          const username = segments.slice(-2, -1)[0];
-          const repository = segments.slice(-1)[0];
-          if (username && repository) {
-            return { username, repository };
+      for (const repoUrl of splitByWhitespace(line)) {
+        if (repoUrl.includes("github.com")) {
+          const segments = repoUrl.split(/\/|:/).filter(Boolean);
+          const orgName = segments.slice(-2, -1)[0];
+          const repoName = segments.slice(-1)[0];
+          if (orgName && repoName) {
+            return { orgName, repoName, repoUrl };
           }
         }
       }

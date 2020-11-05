@@ -1,5 +1,4 @@
-import { expirationDates } from "./env/expirationDates";
-import { numberOfAuthors as numberOfAuthors_data } from "./env/numberOfAuthors";
+import { getEnv } from "./env/getEnv";
 import { assertUsage } from "./utils/assertUsage";
 
 export { verify };
@@ -34,7 +33,7 @@ function verify({
 
   if (
     isDev() &&
-    getNumberOfAuthors() >= minNumberOfAuthors &&
+    (getNumberOfAuthors() || 0) >= minNumberOfAuthors &&
     !isActivated(npmName) &&
     !isFreeTrial(freeTrialDays)
   ) {
@@ -47,13 +46,13 @@ function verify({
   }
 }
 
-function isActivated(npmName: string): boolean {
-  assertUsage(npmName, "Argument `npmName` is missing.");
-  if (expirationDates === undefined) {
-    // postinstall script wasn't run
-    return true;
-  }
-  //@ts-ignore
+function isActivated(npmName: string): boolean | null {
+  const env = getEnv();
+
+  // postinstall script wasn't run
+  if (!env) return null;
+
+  const { expirationDates } = env.activation;
   const expirationDate: number = expirationDates[npmName];
   if (!expirationDate) {
     return false;
@@ -61,21 +60,16 @@ function isActivated(npmName: string): boolean {
   return expirationDate >= new Date().getTime();
 }
 
-function getNumberOfAuthors(): number {
-  if (numberOfAuthors_data === undefined) {
-    // postinstall script wasn't run
-    return 0;
-  }
-  if (numberOfAuthors_data === null) {
-    return 0;
-  }
-  //@ts-ignore
-  return numberOfAuthors_data;
+function getNumberOfAuthors(): number | null {
+  const env = getEnv();
+
+  // postinstall script wasn't run
+  if (!env) return 0;
+
+  return env.repo.numberOfAuthors;
 }
 
 function callToActivate({ projectName, npmName }: ProjectInfo): string {
-  assertUsage(npmName, "Argument `npmName` is missing.");
-  assertUsage(projectName, "Argument `npmName` is missing.");
   return [
     `You need an activation key to use ${projectName}.`,
     `Get your (free) activation key at ${activationUrl(npmName)}`,
@@ -83,7 +77,6 @@ function callToActivate({ projectName, npmName }: ProjectInfo): string {
 }
 
 function activationUrl(npmName: string): string {
-  assertUsage(npmName, "Argument `npmName` is missing.");
   return `https://lsos.org/npm/${npmName}/activate`;
 }
 

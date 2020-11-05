@@ -1,8 +1,8 @@
-import { splitByLine, splitByWhitespace } from "../../utils/split";
+import { runGitCommand } from "../utils/runGitCommand";
+import { splitByLine, splitByWhitespace } from "../utils/split";
 import assert = require("assert");
-import { runGitCommand } from "../../utils/runGitCommand";
 
-export { retrieveNumberOfAuthors };
+export { getNumberOfAuthors };
 
 const MIN_NUMBER_OF_COMMITS = 5;
 const LOOKUP_PERIOD = getDateAgo({ month: 3 });
@@ -13,7 +13,7 @@ type Author = {
   numberOfCommits: number;
 };
 
-async function retrieveNumberOfAuthors(): Promise<number | null> {
+async function getNumberOfAuthors(): Promise<number | null> {
   const authors: Author[] | null = await getAuthors();
 
   if (authors === null) return null;

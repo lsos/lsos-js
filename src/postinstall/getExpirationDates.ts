@@ -1,18 +1,11 @@
-import { replaceFileContent } from "../utils/replaceFileContent";
 import {
   getPurchasedDaysLeft,
   PurchasedDaysLeft,
 } from "../cli/commands/status";
 
-type ExpirationDates = { [key: string]: number };
+export type ExpirationDates = { [key: string]: number };
 
-export { saveExpirationDates };
-
-async function saveExpirationDates(envFile: string) {
-  const expirationDates = await getExpirationDates();
-
-  replaceFileContent(envFile, "expirationDates", expirationDates);
-}
+export { getExpirationDates };
 
 async function getExpirationDates(): Promise<ExpirationDates> {
   const purchasedDaysLeft: PurchasedDaysLeft = await getPurchasedDaysLeft();
