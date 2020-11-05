@@ -2,6 +2,7 @@
 
 import { activate } from "./commands/activate";
 import { status } from "./commands/status";
+import { debug } from "./commands/debug";
 import { fgBold, styleError, styleErrorEmphasis } from "./components/colors";
 import { header } from "./components/header";
 import assert = require("assert");
@@ -37,6 +38,9 @@ async function runCli() {
       break;
     case "status":
       await _status(args);
+      break;
+    case "debug":
+      await debug();
       break;
     default:
       console.log(styleError("Unknown command ") + styleErrorEmphasis(command));
