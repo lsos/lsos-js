@@ -1,6 +1,7 @@
 import { runGitCommand } from "../utils/runGitCommand";
 import { splitByLine, splitByWhitespace } from "../utils/split";
 import assert = require("assert");
+import { stringifyDate } from "../utils/stringifyDate";
 
 export { getNumberOfAuthors };
 
@@ -113,10 +114,6 @@ function getDateAgo({ month }: { month: number }): string {
   const today__epoch = new Date().getTime();
   const dateAgo__epoch = today__epoch - TIME_AGO;
   const dateAgo__date = new Date(dateAgo__epoch);
-  const dateAgo = [
-    dateAgo__date.getFullYear(),
-    dateAgo__date.getMonth() + 1,
-    dateAgo__date.getDate(),
-  ].join("-");
+  const dateAgo = stringifyDate(dateAgo__date);
   return dateAgo;
 }

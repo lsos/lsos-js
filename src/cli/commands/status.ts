@@ -3,6 +3,7 @@ import { symbolInfo, symbolSuccess, symbolError } from "../components/symbols";
 import { fgBold } from "../components/colors";
 import { ActivationKey } from "../../activationKey";
 import { getActivationKeys } from "../../projectLsosConfig";
+import { stringifyDate } from "../../utils/stringifyDate";
 
 export { getPurchasedDaysLeft };
 
@@ -23,14 +24,11 @@ async function status() {
       console.log(
         symbolSuccess +
           fgBold(tool) +
-          " purchased for " +
-          fgBold(daysLeft.toString()) +
-          " more days."
+          " activated until " +
+          fgBold(toDate(daysLeft))
       );
     } else {
-      console.log(
-        symbolError + fgBold(tool) + " expired; no purchased days left."
-      );
+      console.log(symbolError + fgBold(tool) + " activation expired.");
     }
   });
 }
@@ -66,6 +64,13 @@ async function getPurchasedDaysLeft(): Promise<PurchasedDaysLeft> {
   });
 
   return purchasedDaysLeft;
+}
+
+function toDate(daysLeft: number): string {
+  const ONE_DAY = 24 * 60 * 60 * 1000;
+  const expirationDate = new Date(new Date().getTime() + daysLeft * ONE_DAY);
+  const skipDay = daysLeft > 3 * 31;
+  return stringifyDate(expirationDate, { skipDay });
 }
 
 function substractElapsedTime(

@@ -7,6 +7,7 @@ import {
   ActivationKeyData,
 } from "./";
 import assert = require("assert");
+import { stringifyDate } from "../utils/stringifyDate";
 
 export { generateActivationCommand };
 
@@ -18,7 +19,7 @@ function generateActivationCommand(
 
   const activationKeyData: ActivationKeyData = {
     ...activationData,
-    issueDate: serializeDate(new Date()),
+    issueDate: stringifyDate(new Date()),
   };
 
   const signature = signatureCreate(activationKeyData, privateKeyPath);
@@ -32,8 +33,4 @@ function generateActivationCommand(
   const activationCommand = "yarn lsos activate " + keyEncoded;
 
   return activationCommand;
-}
-
-function serializeDate(date: Date): string {
-  return [date.getFullYear(), date.getMonth() + 1, date.getDate()].join("-");
 }
