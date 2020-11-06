@@ -13,7 +13,7 @@ export { generateActivationCommand };
 function generateActivationCommand(
   activationData: ActivationData,
   privateKeyPath: string
-): string {
+): { npmCommand: string; yarnCommand: string } {
   assert(privateKeyPath);
 
   const issueDate = stringifyDate(new Date());
@@ -30,7 +30,9 @@ function generateActivationCommand(
 
   const keyEncoded = encodeActivationKey(activationKey);
 
-  const activationCommand = "yarn lsos activate " + keyEncoded;
+  const activationCommand = "lsos activate " + keyEncoded;
+  const npmCommand = "npx " + activationCommand;
+  const yarnCommand = "yarn " + activationCommand;
 
-  return activationCommand;
+  return { npmCommand, yarnCommand };
 }
