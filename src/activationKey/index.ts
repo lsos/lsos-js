@@ -23,11 +23,11 @@ export type ActivationData = {
   purchasedDays: number;
   keyWasFree?: boolean;
 };
-export type ActivationKeyData = ActivationData & {
-  issueDate: string;
-};
-export type ActivationKey = ActivationKeyData & {
-  signature: string;
+type IssueDate = string & { _brand?: "IssueDate" };
+type Signature = string & { _brand?: "Signature" };
+export type ActivationKey = ActivationData & {
+  issueDate: IssueDate;
+  signature: Signature;
 };
 
 function decodeActivationKey(keyEncoded: string): ActivationKey {
@@ -36,61 +36,46 @@ function decodeActivationKey(keyEncoded: string): ActivationKey {
   return activationKey;
 }
 function encodeActivationKey(activationKey: ActivationKey): string {
-  const keyString = serializeWithSignature(activationKey);
+  const { issueDate, signature } = activationKey;
+  const keyString = serialize(activationKey, issueDate, signature);
   const keyEncoded = base64_encode(keyString);
   return keyEncoded;
 }
 
 function signatureCreate(
-  activationKeyData: ActivationKeyData,
+  activationData: ActivationData,
+  issueDate: IssueDate,
   privateKeyPath: string
 ): string {
-  const keyHash = computeKeyHash(activationKeyData);
+  const keyHash = serialize(activationData, issueDate);
   const signature = signCreate(keyHash, privateKeyPath);
   return signature;
 }
 function signatureVerify(activationKey: ActivationKey): boolean {
-  const { signature } = activationKey;
-  const keyHash = computeKeyHash(activationKey);
+  const { issueDate, signature } = activationKey;
+  const keyHash = serialize(activationKey, issueDate);
   const isValid: boolean = signVerify(keyHash, signature, publicKeyPath);
   return isValid;
 }
 
-function computeKeyHash(
-  activationKey: ActivationKeyData | ActivationKey
+function serialize(
+  activationData: ActivationData,
+  issueDate: IssueDate,
+  signature?: Signature
 ): string {
-  const keyHash = serializeWithoutSignature(activationKey);
-  return keyHash;
-}
-
-function serializeWithoutSignature(
-  activationKey: ActivationKeyData | ActivationKey
-): string {
-  return _serialize(activationKey, false);
-}
-function serializeWithSignature(activationKey: ActivationKey): string {
-  return _serialize(activationKey, true);
-}
-function _serialize(
-  activationKey: ActivationKey | ActivationKeyData,
-  withSignature: boolean
-): string {
-  assertActivationKey(activationKey);
+  assertActivationKey(activationData);
 
   const keyValues = [
-    activationKey.tool, // 0
-    activationKey.user.type, // 1
-    activationKey.user.name, // 2
-    activationKey.user.email, // 3
-    activationKey.user.website, // 4
-    activationKey.purchasedDays.toString(), // 5
-    activationKey.issueDate, // 6
-    (activationKey.keyWasFree || false).toString(), // 7
+    activationData.tool, // 0
+    activationData.user.type, // 1
+    activationData.user.name, // 2
+    activationData.user.email, // 3
+    activationData.user.website, // 4
+    activationData.purchasedDays.toString(), // 5
+    (activationData.keyWasFree || false).toString(), // 6
+    issueDate, // 7
   ];
-  if (withSignature) {
-    assert((activationKey as ActivationKey).signature);
-    keyValues.push((activationKey as ActivationKey).signature);
-  }
+  if (signature) keyValues.push(signature);
   assertKeyValues(keyValues);
   const keyString = keyValues.join("|");
   return keyString;
@@ -109,8 +94,8 @@ function deserialize(keyString: string): ActivationKey {
       website: keyValues[4],
     },
     purchasedDays: parseInt(keyValues[5], 10),
-    issueDate: keyValues[6],
-    keyWasFree: parseBoolean(keyValues[7]),
+    keyWasFree: parseBoolean(keyValues[6]),
+    issueDate: keyValues[7],
     signature: keyValues[8],
   };
 
@@ -133,14 +118,13 @@ function assertKeyValues(keyValues: any[]): void {
   });
 }
 
-function assertActivationKey(activationKey: ActivationKey | ActivationKeyData) {
+function assertActivationKey(activationKey: ActivationData) {
   assert(activationKey.tool);
   assert(activationKey.user.type);
   assert(activationKey.user.name);
   assert(activationKey.user.email);
   assert(activationKey.user.website);
   assert(activationKey.purchasedDays);
-  assert(activationKey.issueDate);
 }
 
 function base64_decode(str: string): string {
@@ -157,7 +141,7 @@ function parseBoolean(str: string): boolean {
 
 function signVerify(
   keyHash: string,
-  signature: string,
+  signature: Signature,
   publicKeyPath: string
 ): boolean {
   assert(keyHash);

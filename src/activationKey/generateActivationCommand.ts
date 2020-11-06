@@ -4,7 +4,6 @@ import {
   signatureCreate,
   signatureVerify,
   encodeActivationKey,
-  ActivationKeyData,
 } from "./";
 import assert = require("assert");
 import { stringifyDate } from "../utils/stringifyDate";
@@ -17,14 +16,15 @@ function generateActivationCommand(
 ): string {
   assert(privateKeyPath);
 
-  const activationKeyData: ActivationKeyData = {
+  const issueDate = stringifyDate(new Date());
+
+  const signature = signatureCreate(activationData, issueDate, privateKeyPath);
+
+  const activationKey: ActivationKey = {
     ...activationData,
-    issueDate: stringifyDate(new Date()),
+    issueDate,
+    signature,
   };
-
-  const signature = signatureCreate(activationKeyData, privateKeyPath);
-
-  const activationKey: ActivationKey = { ...activationKeyData, signature };
 
   assert(signatureVerify(activationKey));
 
