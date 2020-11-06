@@ -9,16 +9,21 @@ export { encodeActivationKey };
 export { signatureVerify };
 export { signatureCreate };
 
-export type ActivationKeyDataWithoutIssueDate = {
+export type UserType = "company" | "individual" | "nonprofit";
+export type UserInfo = {
+  type: UserType;
+  name: string;
+  email: string;
+  website: string;
+};
+
+export type ActivationData = {
   tool: string;
-  company: {
-    name: string;
-    website: string;
-  };
+  user: UserInfo;
   purchasedDays: number;
   keyWasFree?: boolean;
 };
-export type ActivationKeyData = ActivationKeyDataWithoutIssueDate & {
+export type ActivationKeyData = ActivationData & {
   issueDate: string;
 };
 export type ActivationKey = ActivationKeyData & {
@@ -73,12 +78,14 @@ function _serialize(
   assertActivationKey(activationKey);
 
   const keyValues = [
-    activationKey.tool,
-    activationKey.company.name,
-    activationKey.company.website,
-    activationKey.purchasedDays.toString(),
-    activationKey.issueDate,
-    (activationKey.keyWasFree || false).toString(),
+    activationKey.tool, // 0
+    activationKey.user.type, // 1
+    activationKey.user.name, // 2
+    activationKey.user.email, // 3
+    activationKey.user.website, // 4
+    activationKey.purchasedDays.toString(), // 5
+    activationKey.issueDate, // 6
+    (activationKey.keyWasFree || false).toString(), // 7
   ];
   if (withSignature) {
     assert((activationKey as ActivationKey).signature);
@@ -93,16 +100,18 @@ function deserialize(keyString: string): ActivationKey {
   assertKeyValues(keyValues);
   assert(keyValues.length === 7, JSON.stringify(keyValues));
 
-  const activationKey = {
+  const activationKey: ActivationKey = {
     tool: keyValues[0],
-    company: {
-      name: keyValues[1],
-      website: keyValues[2],
+    user: {
+      type: keyValues[1] as UserType,
+      name: keyValues[2],
+      email: keyValues[3],
+      website: keyValues[4],
     },
-    purchasedDays: parseInt(keyValues[3], 10),
-    issueDate: keyValues[4],
-    keyWasFree: parseBoolean(keyValues[5]),
-    signature: keyValues[6],
+    purchasedDays: parseInt(keyValues[5], 10),
+    issueDate: keyValues[6],
+    keyWasFree: parseBoolean(keyValues[7]),
+    signature: keyValues[8],
   };
 
   assertActivationKey(activationKey);
@@ -126,8 +135,10 @@ function assertKeyValues(keyValues: any[]): void {
 
 function assertActivationKey(activationKey: ActivationKey | ActivationKeyData) {
   assert(activationKey.tool);
-  assert(activationKey.company.name);
-  assert(activationKey.company.website);
+  assert(activationKey.user.type);
+  assert(activationKey.user.name);
+  assert(activationKey.user.email);
+  assert(activationKey.user.website);
   assert(activationKey.purchasedDays);
   assert(activationKey.issueDate);
 }
@@ -169,4 +180,3 @@ function signCreate(keyHash: string, privateKeyPath: string): string {
   const signature = sign.sign(privateKey, "hex");
   return signature;
 }
-

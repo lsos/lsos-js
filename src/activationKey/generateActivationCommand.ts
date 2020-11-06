@@ -1,5 +1,5 @@
 import {
-  ActivationKeyDataWithoutIssueDate,
+  ActivationData,
   ActivationKey,
   signatureCreate,
   signatureVerify,
@@ -12,7 +12,7 @@ import { stringifyDate } from "../utils/stringifyDate";
 export { generateActivationCommand };
 
 function generateActivationCommand(
-  activationData: ActivationKeyDataWithoutIssueDate,
+  activationData: ActivationData,
   privateKeyPath: string
 ): string {
   assert(privateKeyPath);
