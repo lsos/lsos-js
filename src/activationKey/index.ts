@@ -83,7 +83,7 @@ function serialize(
 function deserialize(keyString: string): ActivationKey {
   const keyValues = keyString.split("|");
   assertKeyValues(keyValues);
-  assert(keyValues.length === 7, JSON.stringify(keyValues));
+  assert(keyValues.length === 9, JSON.stringify(keyValues));
 
   const activationKey: ActivationKey = {
     tool: keyValues[0],
