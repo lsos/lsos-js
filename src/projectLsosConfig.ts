@@ -7,6 +7,7 @@ import findUp = require("find-up");
 const CONFIG_FILENAME = ".lsos.json";
 
 export { getActivationKeys };
+export { getInvalidKeys };
 export { readProjectLsosConfigFile };
 export { writeProjectLsosConfigFile };
 export { getProjectLsosConfigPath };
@@ -15,10 +16,19 @@ export type ProjectLsosConfig = {
   activationKeys: ActivationKey[];
 };
 
+async function getInvalidKeys(): Promise<unknown[]> {
+  let activationKeys: ActivationKey[] = await getAllKeys();
+  activationKeys = activationKeys.filter((key) => isInvalidKey(key));
+  return activationKeys;
+}
 async function getActivationKeys(): Promise<ActivationKey[]> {
+  let activationKeys: ActivationKey[] = await getAllKeys();
+  activationKeys = activationKeys.filter((key) => !isInvalidKey(key));
+  return activationKeys;
+}
+async function getAllKeys(): Promise<ActivationKey[]> {
   const projectLsosConfig: ProjectLsosConfig = await readProjectLsosConfigFile();
   let activationKeys: ActivationKey[] = projectLsosConfig.activationKeys || [];
-  activationKeys = activationKeys.filter((key) => !isInvalidKey(key));
   return activationKeys;
 }
 

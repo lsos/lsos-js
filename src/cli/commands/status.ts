@@ -2,7 +2,7 @@ import assert = require("assert");
 import { symbolInfo, symbolSuccess, symbolError } from "../components/symbols";
 import { fgBold } from "../components/colors";
 import { ActivationKey } from "../../activationKey";
-import { getActivationKeys } from "../../projectLsosConfig";
+import { getActivationKeys, getInvalidKeys } from "../../projectLsosConfig";
 import { stringifyDate } from "../../utils/stringifyDate";
 
 export { getPurchasedDaysLeft };
@@ -31,20 +31,24 @@ async function status() {
       console.log(symbolError + fgBold(tool) + " activation expired.");
     }
   });
+
+  Object.entries(await getInvalidKeys()).forEach((key) => {
+    console.log(symbolError + "Invalid key: " + JSON.stringify(key));
+  });
 }
 
 async function getPurchasedDaysLeft(): Promise<PurchasedDaysLeft> {
   const activationKeys = await getActivationKeys();
 
-  const tools: { [key: string]: ActivationKey[] } = {};
+  const toolNames: { [key: string]: ActivationKey[] } = {};
   activationKeys.forEach((key) => {
-    assert(key.tool);
-    tools[key.tool] = tools[key.tool] || [];
-    tools[key.tool].push(key);
+    assert(key.tool.npmName);
+    toolNames[key.tool.npmName] = toolNames[key.tool.npmName] || [];
+    toolNames[key.tool.npmName].push(key);
   });
 
   const purchasedDaysLeft: PurchasedDaysLeft = {};
-  Object.entries(tools).forEach(([tool, keys]) => {
+  Object.entries(toolNames).forEach(([toolName, keys]) => {
     keys.sort((a, b) => epoch(a.issueDate) - epoch(b.issueDate));
 
     assert(keys.length >= 1);
@@ -60,7 +64,7 @@ async function getPurchasedDaysLeft(): Promise<PurchasedDaysLeft> {
 
     daysLeft = substractElapsedTime(daysLeft, previousDate, new Date());
 
-    purchasedDaysLeft[tool] = daysLeft;
+    purchasedDaysLeft[toolName] = daysLeft;
   });
 
   return purchasedDaysLeft;
