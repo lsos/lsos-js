@@ -1,5 +1,6 @@
 import { exec, ExecException } from "child_process";
 import assert = require("assert");
+const { repository, name } = require("../../../package.json");
 
 export { execCmd };
 
@@ -20,7 +21,7 @@ function execCmd(
 
   const timeout = setTimeout(() => {
     console.error(
-      `[Lsos] Command call is hanging. Open an issue at \`https://github.com/Lsos/lsos-js/issues/new\`. The command that is hanging is: \`${cmd}\`.`
+      `[${name}] Command call is hanging. Open an issue at \`${repository}/issues/new\`. The command that is hanging is: \`${cmd}\`.`
     );
     process.exit();
   }, 5 * 1000);

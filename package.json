@@ -28,7 +28,7 @@
     "/dist/",
     "/src/"
   ],
-  "repository": "github:lsos/lsos-js",
+  "repository": "https://github.com/Lsos/lsos-js",
   "publishConfig": {
     "access": "public"
   }
