@@ -6,7 +6,9 @@ const publicKeyPath = require.resolve("../../src/activationKey/public.pem");
 
 export { decodeActivationKey };
 export { encodeActivationKey };
-export { signatureVerify };
+
+export { isInvalidKey };
+
 export { signatureCreate };
 
 export type UserType = "company" | "individual" | "nonprofit";
@@ -21,7 +23,7 @@ export type ActivationData = {
   tool: string;
   user: UserInfo;
   purchasedDays: number;
-  keyWasFree?: boolean;
+  keyWasFree: boolean;
 };
 type IssueDate = string & { _brand?: "IssueDate" };
 type Signature = string & { _brand?: "Signature" };
@@ -40,6 +42,16 @@ function encodeActivationKey(activationKey: ActivationKey): string {
   const keyString = serialize(activationKey, issueDate, signature);
   const keyEncoded = base64_encode(keyString);
   return keyEncoded;
+}
+
+function isInvalidKey(key: ActivationKey) {
+  if (!isValidActivationKey(key)) {
+    return { wrongData: true };
+  }
+  if (!signatureVerify(key)) {
+    return { wrongSignature: true };
+  }
+  return false;
 }
 
 function signatureCreate(
@@ -63,17 +75,17 @@ function serialize(
   issueDate: IssueDate,
   signature?: Signature
 ): string {
-  assertActivationKey(activationData);
+  assert(isValidActivationData);
 
   const keyValues = [
-    activationData.tool, // 0
-    activationData.user.type, // 1
-    activationData.user.name, // 2
-    activationData.user.email, // 3
-    activationData.user.website, // 4
-    activationData.purchasedDays.toString(), // 5
-    (activationData.keyWasFree || false).toString(), // 6
-    issueDate, // 7
+    activationData.tool, // prop-0
+    activationData.user.type, // prop-1
+    activationData.user.name, // prop-2
+    activationData.user.email, // prop-3
+    activationData.user.website, // prop-4
+    activationData.purchasedDays.toString(), // prop-5
+    activationData.keyWasFree.toString(), // prop-6
+    issueDate, // prop-7
   ];
   if (signature) keyValues.push(signature);
   assertKeyValues(keyValues);
@@ -86,21 +98,20 @@ function deserialize(keyString: string): ActivationKey {
   assert(keyValues.length === 9, JSON.stringify(keyValues));
 
   const activationKey: ActivationKey = {
-    tool: keyValues[0],
+    tool: keyValues[0], // prop-0
     user: {
-      type: keyValues[1] as UserType,
-      name: keyValues[2],
-      email: keyValues[3],
-      website: keyValues[4],
+      type: keyValues[1] as UserType, // prop-1
+      name: keyValues[2], // prop-2
+      email: keyValues[3], // prop-3
+      website: keyValues[4], // prop-4
     },
-    purchasedDays: parseInt(keyValues[5], 10),
-    keyWasFree: parseBoolean(keyValues[6]),
-    issueDate: keyValues[7],
-    signature: keyValues[8],
+    purchasedDays: parseInt(keyValues[5], 10), // prop-5
+    keyWasFree: parseBoolean(keyValues[6]), // prop-6
+    issueDate: keyValues[7], // prop-7
+    signature: keyValues[8], // prop-8
   };
 
-  assertActivationKey(activationKey);
-  assert(activationKey.signature);
+  assert(isValidActivationKey(activationKey));
 
   return activationKey;
 }
@@ -118,13 +129,68 @@ function assertKeyValues(keyValues: any[]): void {
   });
 }
 
-function assertActivationKey(activationKey: ActivationData) {
-  assert(activationKey.tool);
-  assert(activationKey.user.type);
-  assert(activationKey.user.name);
-  assert(activationKey.user.email);
-  assert(activationKey.user.website);
-  assert(activationKey.purchasedDays);
+function isValidActivationData(activationData: unknown) {
+  return (
+    // activationData
+    typeof activationData === "object" &&
+    activationData !== null &&
+    // activationData.tool (prop-0)
+    has(activationData, "tool") &&
+    typeof activationData.tool === "string" &&
+    // activationData.user
+    has(activationData, "user") &&
+    typeof activationData.user === "object" &&
+    activationData.user !== null &&
+    // activationData.user.type (prop-1)
+    isString(activationData.user, "type") &&
+    // activationData.user.name (prop-2)
+    isString(activationData.user, "name") &&
+    // activationData.user.email (prop-3)
+    isString(activationData.user, "email") &&
+    // activationData.user.website (prop-4)
+    isString(activationData.user, "website") &&
+    // activationData.purchasedDays (prop-5)
+    isNumber(activationData, "purchasedDays") &&
+    // activationData.keyWasFree (prop-6)
+    isBoolean(activationData, "keyWasFree")
+  );
+}
+function isValidActivationKey(activationKey: unknown) {
+  return (
+    isValidActivationData(activationKey) &&
+    // activationData
+    typeof activationKey === "object" &&
+    activationKey !== null &&
+    // activationData.issueDate (prop-7)
+    has(activationKey, "issueDate") &&
+    isValidIssueDate(activationKey.issueDate) &&
+    // activationData.signature (prop-8)
+    isString(activationKey, "signature")
+  );
+}
+function isValidIssueDate(issueDate: unknown) {
+  return (
+    issueDate &&
+    typeof issueDate === "string" &&
+    new Date(issueDate) &&
+    new Date(issueDate).getTime() < new Date().getTime()
+  );
+}
+function isNumber(obj: object, prop: string) {
+  return has(obj, prop) && typeof obj[prop] === "number";
+}
+function isBoolean(obj: object, prop: string) {
+  return has(obj, prop) && typeof obj[prop] === "boolean";
+}
+function isString(obj: object, prop: string) {
+  return has(obj, prop) && typeof obj[prop] === "string";
+}
+function has<P extends PropertyKey>(
+  target: object,
+  property: P
+): target is { [K in P]: unknown } {
+  // Source: https://github.com/Microsoft/TypeScript/issues/21732#issuecomment-663994772
+  return property in target;
 }
 
 function base64_decode(str: string): string {

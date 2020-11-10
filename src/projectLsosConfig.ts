@@ -2,7 +2,7 @@ import assert = require("assert");
 import { EOL } from "os";
 import { isAbsolute as pathIsAbsolute, join as pathJoin } from "path";
 import { writeFileSync, readFileSync } from "fs";
-import { ActivationKey } from "./activationKey";
+import { ActivationKey, isInvalidKey } from "./activationKey";
 import findUp = require("find-up");
 const CONFIG_FILENAME = ".lsos.json";
 
@@ -17,7 +17,8 @@ export type ProjectLsosConfig = {
 
 async function getActivationKeys(): Promise<ActivationKey[]> {
   const projectLsosConfig: ProjectLsosConfig = await readProjectLsosConfigFile();
-  const activationKeys = projectLsosConfig.activationKeys || [];
+  let activationKeys: ActivationKey[] = projectLsosConfig.activationKeys || [];
+  activationKeys = activationKeys.filter((key) => !isInvalidKey(key));
   return activationKeys;
 }
 
@@ -26,9 +27,7 @@ async function readProjectLsosConfigFile(): Promise<ProjectLsosConfig> {
     readJsonFile(await getProjectLsosConfigPath()) || {};
   assert(
     projectLsosConfig.constructor === Object,
-    "The file at " +
-      configPath +
-      " should not exist or should be a JSON object."
+    "The file at " + configPath + " should should be a JSON object."
   );
   return projectLsosConfig;
 }

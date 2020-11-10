@@ -2,7 +2,7 @@ import {
   ActivationData,
   ActivationKey,
   signatureCreate,
-  signatureVerify,
+  isInvalidKey,
   encodeActivationKey,
 } from "./";
 import assert = require("assert");
@@ -26,7 +26,7 @@ function generateActivationCommand(
     signature,
   };
 
-  assert(signatureVerify(activationKey));
+  assert(!isInvalidKey(activationKey));
 
   const keyEncoded = encodeActivationKey(activationKey);
 

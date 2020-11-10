@@ -98,7 +98,6 @@ function isFreeTrial(freeTrialDays: number): boolean {
   // TODO
   return false;
 }
-
 function blockUser() {
   // TODO
   return false;

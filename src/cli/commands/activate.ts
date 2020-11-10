@@ -2,7 +2,7 @@ import { symbolInfo, symbolSuccess } from "../components/symbols";
 import { stylePath } from "../components/colors";
 import {
   decodeActivationKey,
-  signatureVerify,
+  isInvalidKey,
   ActivationKey,
 } from "../../activationKey";
 import {
@@ -18,7 +18,7 @@ export { activate };
 async function activate(keyEncoded: string): Promise<void> {
   const activationKey: ActivationKey = decodeActivationKey(keyEncoded);
 
-  if (!signatureVerify(activationKey)) {
+  if (isInvalidKey(activationKey)) {
     assert(false, "Invalid key: the signature seems to have been corrupted.");
   }
 
