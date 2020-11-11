@@ -64,7 +64,7 @@ function getNumberOfAuthors(): number | null {
   const env = getEnv();
 
   // postinstall script wasn't run
-  if (!env) return 0;
+  if (!env) return null;
 
   return env.repo.numberOfAuthors;
 }
