@@ -16,10 +16,10 @@ function verify({
   freeTrialDays = 7,
   debug = false,
 }: ProjectInfo & {
-  minNumberOfAuthors: number;
-  onlyWarning: boolean;
-  freeTrialDays: number;
-  debug: boolean;
+  minNumberOfAuthors?: number;
+  onlyWarning?: boolean;
+  freeTrialDays?: number;
+  debug?: boolean;
 }) {
   assertUsage(npmName, "Argument `npmName` is missing.");
   assertUsage(projectName, "Argument `npmName` is missing.");
