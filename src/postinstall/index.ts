@@ -4,18 +4,18 @@ import { getExpirationDates } from "./getExpirationDates";
 import { getNumberOfAuthors } from "./getNumberOfAuthors";
 import { getRepoIsPublic } from "./getRepoIsPublic";
 
-postinstall();
+export { postinstall };
 
 async function postinstall() {
   try {
-    await env();
+    await determineEnv();
   } catch (err) {
     console.log("====== Warning ======");
     console.log(err);
   }
 }
 
-async function env() {
+async function determineEnv() {
   const [expirationDates, numberOfAuthors, repoInfo] = await Promise.all([
     await getExpirationDates(),
     await getNumberOfAuthors(),
@@ -36,45 +36,3 @@ async function env() {
 
   setEnv(env);
 }
-/*
-async function env() {
-  let expirationDates;
-  let cwd;
-  let isPublic;
-  let numberOfAuthors;
-  let orgName;
-  let repoName;
-  let repoUrl;
-  await Promise.all([
-    (async () => {
-      expirationDates =
-      await getExpirationDates();
-    })(),
-    (async () => {
-      numberOfAuthors = await getNumberOfAuthors();
-    })(),
-    (async () => {
-      const repoInfo = await getRepoIsPublic();
-      isPublic = repoInfo.isPublic;
-      repoUrl = repoInfo.repoUrl;
-      orgName = repoInfo.orgName;
-      repoName = repoInfo.repoName;
-      cwd = repoInfo.cwd;
-    })(),
-  ]);
-
-  const env: Env = {
-    cwd,
-    repo: {
-      isPublic,
-      numberOfAuthors,
-      repoUrl,
-      repoName,
-      orgName,
-    },
-    activation: { expirationDates },
-  };
-
-  setEnv(env);
-}
-*/

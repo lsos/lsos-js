@@ -1,5 +1,4 @@
 import { ExpirationDates } from "../postinstall/getExpirationDates";
-import { envData } from "./envData";
 
 export { getEnv };
 
@@ -20,5 +19,5 @@ export type Env =
     };
 
 function getEnv(): Env {
-  return envData;
+  return require("./envData").envData;
 }

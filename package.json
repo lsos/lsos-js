@@ -11,7 +11,7 @@
   "types": "dist/verify.d.ts",
   "scripts": {
     "// Post-install": "",
-    "postinstall": "node -e \"try{require('./dist/postinstall/index.js')}catch(err){console.log('====== Warning ======');console.log(err);}\"",
+    "postinstall": "node -e \"try{require('./dist/postinstall/run.js')}catch(err){console.log('====== Warning ======');console.log(err);}\"",
     "// Build": "",
     "build": "yarn build:clean && yarn build:transpile && yarn build:binaries",
     "build:clean": "rm -rf ./dist/ ./tsconfig.tsbuildinfo",

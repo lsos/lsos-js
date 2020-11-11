@@ -12,6 +12,7 @@ export { setEnv };
 
 function setEnv(envValue: Env): void {
   replaceFileContent(envDataFile, "envData", envValue);
+  removeRequireCache(envDataFile);
 }
 
 function replaceFileContent(
@@ -68,4 +69,9 @@ function replaceFileContent(
     );
     return { boilerplateLinesBefore, boilerplateLinesAfter };
   }
+}
+
+function removeRequireCache(modulePath: string): void {
+  // Ensure that require(modulePath) reloads
+  delete require.cache[modulePath];
 }
