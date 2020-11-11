@@ -38,7 +38,7 @@ function verify({
     !isFreeTrial(freeTrialDays)
   ) {
     const msg = callToActivate({ projectName, npmName });
-    if (!onlyWarning && blockUser()) {
+    if (!onlyWarning) {
       throw msg;
     } else {
       console.warn(msg);
@@ -95,10 +95,6 @@ function isDev() {
 }
 
 function isFreeTrial(freeTrialDays: number): boolean {
-  // TODO
-  return false;
-}
-function blockUser() {
   // TODO
   return false;
 }
