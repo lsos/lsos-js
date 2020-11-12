@@ -12,6 +12,7 @@ import {
   writeProjectLsosConfigFile,
 } from "../../projectLsosConfig";
 import assert = require("assert");
+import { postinstall } from "../../postinstall";
 
 export { activate };
 
@@ -23,6 +24,8 @@ async function activate(keyEncoded: string): Promise<void> {
   }
 
   const alreadyAdded = await addActivationKey(activationKey);
+
+  await postinstall();
 
   console.log(
     (alreadyAdded ? symbolInfo : symbolSuccess) +
