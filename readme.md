@@ -11,20 +11,20 @@ import { verify } from "lsos"; // npm install lsos
 
 verify({
   // Your project name
-  projectName: "My Open Source Project",
+  projectName: "My Open Source Project", // Required
 
   // Your npm package that includes this `verify()` function
-  npm: "my-open-source-project",
+  npm: "my-open-source-project", // Required
 
   // Only require an activation key when your user's repository had
   // `minNumberOfAuthors` Git authors in the last 3 months.
-  minNumberOfAuthors: 3, // Default value
+  minNumberOfAuthors: 3, // Optional (default value: 3)
 
   // Never block users, show a `console.warn` instead.
-  onlyWarning: false, // Default value
+  onlyWarning: false, // Optional (default value: false)
 
   // Free trial
-  freeTrialDays: 7 // Default value
+  freeTrialDays: 7 // Optional (default value: 7)
 });
 ~~~
 
