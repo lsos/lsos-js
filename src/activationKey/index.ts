@@ -21,7 +21,7 @@ export type UserInfo = {
 
 export type ActivationData = {
   tool: {
-    npmName: string;
+    npm: string;
   };
   user: UserInfo;
   purchasedDays: number;
@@ -80,7 +80,7 @@ function serialize(
   assert(isValidActivationData);
 
   const keyValues = [
-    activationData.tool.npmName, // prop-0
+    activationData.tool.npm, // prop-0
     activationData.user.type, // prop-1
     activationData.user.name, // prop-2
     activationData.user.email, // prop-3
@@ -101,7 +101,7 @@ function deserialize(keyString: string): ActivationKey {
 
   const activationKey: ActivationKey = {
     tool: {
-      npmName: keyValues[0], // prop-0
+      npm: keyValues[0], // prop-0
     },
     user: {
       type: keyValues[1] as UserType, // prop-1
@@ -141,8 +141,8 @@ function isValidActivationData(activationData: unknown) {
     has(activationData, "tool") &&
     typeof activationData.tool === "object" &&
     activationData.tool !== null &&
-    // activationData.tool.npmName (prop-0)
-    isString(activationData.tool, "npmName") &&
+    // activationData.tool.npm (prop-0)
+    isString(activationData.tool, "npm") &&
     // activationData.user
     has(activationData, "user") &&
     typeof activationData.user === "object" &&

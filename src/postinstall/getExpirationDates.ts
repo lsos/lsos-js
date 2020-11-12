@@ -12,8 +12,8 @@ async function getExpirationDates(): Promise<ExpirationDates> {
 
   const expirationDates: ExpirationDates = {};
 
-  Object.entries(purchasedDaysLeft).forEach(([npmName, daysLeft]) => {
-    expirationDates[npmName] = getExpirationDate(daysLeft).getTime();
+  Object.entries(purchasedDaysLeft).forEach(([npm, daysLeft]) => {
+    expirationDates[npm] = getExpirationDate(daysLeft).getTime();
   });
 
   return expirationDates;

@@ -5,12 +5,12 @@ export { verify };
 
 type ProjectInfo = {
   projectName: string;
-  npmName: string;
+  npm: string;
 };
 
 function verify({
   projectName,
-  npmName,
+  npm,
   minNumberOfAuthors = 3,
   onlyWarning = false,
   freeTrialDays = 7,
@@ -21,23 +21,23 @@ function verify({
   freeTrialDays?: number;
   debug?: boolean;
 }) {
-  assertUsage(npmName, "Argument `npmName` is missing.");
-  assertUsage(projectName, "Argument `npmName` is missing.");
+  assertUsage(npm, "Argument `npm` is missing.");
+  assertUsage(projectName, "Argument `projectName` is missing.");
   assertUsage(onlyWarning !== undefined, "Argument `onlyWarning` is missing.");
   assertUsage(
     [true, false].includes(onlyWarning),
     "Argument `onlyWarning` should be `true` or `false`."
   );
 
-  if (debug) debugLog(npmName, minNumberOfAuthors);
+  if (debug) debugLog(npm, minNumberOfAuthors);
 
   if (
     isDev() &&
     (getNumberOfAuthors() || 0) >= minNumberOfAuthors &&
-    !isActivated(npmName) &&
+    !isActivated(npm) &&
     !isFreeTrial(freeTrialDays)
   ) {
-    const msg = callToActivate({ projectName, npmName });
+    const msg = callToActivate({ projectName, npm });
     if (!onlyWarning) {
       throw msg;
     } else {
@@ -46,14 +46,14 @@ function verify({
   }
 }
 
-function isActivated(npmName: string): boolean | null {
+function isActivated(npm: string): boolean | null {
   const env = getEnv();
 
   // postinstall script wasn't run
   if (!env) return null;
 
   const { expirationDates } = env.activation;
-  const expirationDate: number = expirationDates[npmName];
+  const expirationDate: number = expirationDates[npm];
   if (!expirationDate) {
     return false;
   }
@@ -69,15 +69,15 @@ function getNumberOfAuthors(): number | null {
   return env.repo.numberOfAuthors;
 }
 
-function callToActivate({ projectName, npmName }: ProjectInfo): string {
+function callToActivate({ projectName, npm }: ProjectInfo): string {
   return [
     `You need an activation key to use ${projectName}.`,
-    `Get your (free) activation key at ${activationUrl(npmName)}`,
+    `Get your (free) activation key at ${activationUrl(npm)}`,
   ].join(" ");
 }
 
-function activationUrl(npmName: string): string {
-  return `https://lsos.org/npm/${npmName}/activate`;
+function activationUrl(npm: string): string {
+  return `https://lsos.org/npm/${npm}/activate`;
 }
 
 function isDev() {
@@ -99,12 +99,12 @@ function isFreeTrial(freeTrialDays: number): boolean {
   return false;
 }
 
-function debugLog(npmName: string, minNumberOfAuthors: number): void {
+function debugLog(npm: string, minNumberOfAuthors: number): void {
   console.log({
     isDev: isDev(),
-    isActivated: isActivated(npmName),
+    isActivated: isActivated(npm),
     numberOfAuthors: getNumberOfAuthors(),
     minNumberOfAuthors,
-    npmName,
+    npm,
   });
 }

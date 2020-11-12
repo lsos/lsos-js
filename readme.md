@@ -13,7 +13,7 @@ import { verify } from "lsos"; // npm install lsos
 
 verify({
   // Your npm package name
-  npmName: "my-open-source-project",
+  npm: "my-open-source-project",
 
   // Your project name
   projectName: "My Open Source Project",

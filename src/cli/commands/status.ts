@@ -42,9 +42,9 @@ async function getPurchasedDaysLeft(): Promise<PurchasedDaysLeft> {
 
   const toolNames: { [key: string]: ActivationKey[] } = {};
   activationKeys.forEach((key) => {
-    assert(key.tool.npmName);
-    toolNames[key.tool.npmName] = toolNames[key.tool.npmName] || [];
-    toolNames[key.tool.npmName].push(key);
+    assert(key.tool.npm);
+    toolNames[key.tool.npm] = toolNames[key.tool.npm] || [];
+    toolNames[key.tool.npm].push(key);
   });
 
   const purchasedDaysLeft: PurchasedDaysLeft = {};
