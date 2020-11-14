@@ -28,7 +28,7 @@ verify({
 });
 ~~~
 
-If your user needs an activation key but doesn't have one then `verify()` throws an error preventing your user to use your code.
+If your user needs an activation key but doesn't have one then `verify()` throws an error blocking your user to use your code.
 
 Your user doesn't need an activation key if:
 - Your user's repository had less than `minNumberOfAuthors` Git authors in the last 3 months.
