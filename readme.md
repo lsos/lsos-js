@@ -13,7 +13,7 @@ verify({
   // Your project name
   projectName: "My Open Source Project", // Required
 
-  // Your npm package that includes this `verify()` function
+  // The npm package that includes this `verify()` function
   npm: "my-open-source-project", // Required
 
   // Only require an activation key when your user's repository had
