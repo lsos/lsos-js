@@ -3,7 +3,7 @@ import { EOL } from "os";
 import { isAbsolute as pathIsAbsolute, join as pathJoin } from "path";
 import { writeFileSync, readFileSync } from "fs";
 import { ActivationKey, isInvalidKey } from "./activationKey";
-import findUp = require("find-up");
+import { findUp } from "./utils/findUp";
 const CONFIG_FILENAME = ".lsos.json";
 
 export { getActivationKeys };
@@ -61,9 +61,9 @@ async function getProjectLsosConfigPath(): Promise<string> {
   }
   return configPath;
 }
-async function findConfigFile(): Promise<undefined | string> {
-  const lsosConfigPath = await findUp(CONFIG_FILENAME);
-  assert(lsosConfigPath === undefined || pathIsAbsolute(lsosConfigPath));
+async function findConfigFile(): Promise<null | string> {
+  const lsosConfigPath = await findUp(CONFIG_FILENAME, process.cwd());
+  assert(lsosConfigPath === null || pathIsAbsolute(lsosConfigPath));
   return lsosConfigPath;
 }
 

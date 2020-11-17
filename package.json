@@ -1,9 +1,8 @@
 {
   "name": "lsos",
   "version": "0.1.2",
-  "dependencies": {
-    "find-up": "^5.0.0"
-  },
+  "// Zero dependencies": "",
+  "dependencies": {},
   "main": "dist/verify.js",
   "bin": {
     "lsos": "dist/cli/index.js"
