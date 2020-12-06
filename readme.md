@@ -13,7 +13,7 @@ verify({
   // Your project's name
   projectName: "My Open Source Project", // Required
 
-  // The npm package that includes this `verify()` function
+  // Your npm package that calls this `verify()` function
   npm: "my-open-source-project", // Required
 
   // Only require an activation key when your user's repository had
@@ -24,7 +24,7 @@ verify({
   onlyWarning: false, // Optional (default value: false)
 
   // Free trial
-  freeTrialDays: 7 // Optional (default value: 7)
+  freeTrialDays: 31 // Optional (default value: 31)
 });
 ~~~
 
