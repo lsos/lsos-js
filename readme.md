@@ -10,7 +10,7 @@ See [Lsos - FAQ - What does the Lsos library do?](https://lsos.org/faq#lib) for 
 import { verify } from "lsos"; // npm install lsos
 
 verify({
-  // Your project name
+  // Your project's name
   projectName: "My Open Source Project", // Required
 
   // The npm package that includes this `verify()` function
