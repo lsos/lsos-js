@@ -12,21 +12,21 @@ function verify({
   projectName,
   npm,
   minNumberOfAuthors = 3,
-  onlyWarning = false,
+  trustMode = false,
   freeTrialDays = 7,
   debug = false,
 }: ProjectInfo & {
   minNumberOfAuthors?: number;
-  onlyWarning?: boolean;
+  trustMode?: boolean;
   freeTrialDays?: number;
   debug?: boolean;
 }) {
   assertUsage(npm, "Argument `npm` is missing.");
   assertUsage(projectName, "Argument `projectName` is missing.");
-  assertUsage(onlyWarning !== undefined, "Argument `onlyWarning` is missing.");
+  assertUsage(trustMode !== undefined, "Argument `trustMode` is missing.");
   assertUsage(
-    [true, false].includes(onlyWarning),
-    "Argument `onlyWarning` should be `true` or `false`."
+    [true, false].includes(trustMode),
+    "Argument `trustMode` should be `true` or `false`."
   );
 
   if (debug) debugLog(npm, minNumberOfAuthors);
@@ -38,7 +38,7 @@ function verify({
     !isFreeTrial(freeTrialDays)
   ) {
     const msg = callToActivate({ projectName, npm });
-    if (!onlyWarning) {
+    if (!trustMode) {
       throw msg;
     } else {
       console.warn(msg);

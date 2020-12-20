@@ -6,7 +6,7 @@ See [Lsos - FAQ - What does the Lsos library do?](https://lsos.org/faq#lib) for 
 
 ## Usage
 
-~~~js
+```js
 import { verify } from "lsos"; // npm install lsos
 
 verify({
@@ -21,21 +21,22 @@ verify({
   minNumberOfAuthors: 3, // Optional (default value: 3)
 
   // Never block users, show a `console.warn` instead.
-  onlyWarning: false, // Optional (default value: false)
+  trustMode: false, // Optional (default value: false)
 
   // Free trial
-  freeTrialDays: 31 // Optional (default value: 31)
+  freeTrialDays: 31, // Optional (default value: 31)
 });
-~~~
+```
 
 If your user needs an activation key but doesn't have one then `verify()` throws an error blocking your user from using your code.
 
 Your user doesn't need an activation key if:
+
 - Your user's repository had less than `minNumberOfAuthors` Git authors in the last 3 months.
   (We consider a repository with only few authors a small project; Lsos projects are free for small projects.)
 - Your user's repository is public. (This means that your project can be developed and contributed to without activation key.)
 - The free trial didn't end. (A `console.info` is shown to your user letting him know that he is using the free trial.)
-- The `onlyWarning` option is set to `true`. (A `console.warn` is shown instead of throwing an error. This means that users can indefinitely use your code without activation key. Such trust-based practice has shown success in the past, for example Sublime Text.)
+- The [`trustMode` option](https://lsos.org/faq#trust-mode) is set to `true`.
 
 `verify()` (and the Lsos in general) has no effects in these situations.
 
@@ -45,4 +46,3 @@ The `verify` function has no dependencies and is isomorphic;
 the `lsos` package can be used for Node.js libraries as well as browser libraries.
 
 <br/>
-
