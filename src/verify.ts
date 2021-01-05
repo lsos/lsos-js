@@ -34,6 +34,7 @@ function verify({
   if (
     isDev() &&
     (getNumberOfAuthors() || 0) >= minNumberOfAuthors &&
+    !repoIsPublic() &&
     !isActivated(npm) &&
     !isFreeTrial(freeTrialDays)
   ) {
@@ -58,6 +59,15 @@ function isActivated(npm: string): boolean | null {
     return false;
   }
   return expirationDate >= new Date().getTime();
+}
+
+function repoIsPublic(): boolean | null {
+  const env = getEnv();
+
+  // postinstall script wasn't run
+  if (!env) return null;
+
+  return env.repo.isPublic;
 }
 
 function getNumberOfAuthors(): number | null {
@@ -104,6 +114,7 @@ function debugLog(npm: string, minNumberOfAuthors: number): void {
     isDev: isDev(),
     isActivated: isActivated(npm),
     numberOfAuthors: getNumberOfAuthors(),
+    repoIsPublic: repoIsPublic(),
     minNumberOfAuthors,
     npm,
   });
